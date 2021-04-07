@@ -1,2 +1,2 @@
-# csvv-tool
-Tool to rate the CSVV score of an asset. 
+# cvss-tool
+Tool to rate the CVSS score of an asset. 
