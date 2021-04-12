@@ -1,0 +1,8 @@
+{ 
+    "ATTACK_VECTOR": {
+      "L": "Local >> The attacker must either have physical access to the vulnerable system (e.g. firewire attacks) or a local account (e.g. a privilege escalation attack). {0.55}", 
+      "A": "Adjances Network >> The attacker must have access to the broadcast or collision domain of the vulnerable system (e.g. ARP spoofing, Bluetooth attacks).	 {0.62}", 
+      "N": "Network >> The vulnerable interface is working at layer 3 or above of the OSI Network stack. These types of vulnerabilities are often described as remotely exploitable (e.g. a remote buffer overflow in a network service) {0.85}",
+      "P": "Physical Layer {0.2}"
+      }
+    }

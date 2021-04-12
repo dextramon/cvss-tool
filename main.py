@@ -1,5 +1,9 @@
 
 import math 
+import json
+
+with open('GUI_text.json') as f:
+    data = json.load(f)
 
 def round_up(n, decimals=0):
     multiplier = 10 ** decimals
@@ -60,20 +64,26 @@ class Controller:
         self.set_impact_metrics()
 
     def set_impact_metrics(self):
-        EXPLOIT_CODE_MATURITY = {"X": "Not defined",
+        EXPLOIT_CODE_MATURITY = {
+            "X": "Not defined",
             "U": "Unproven that exploit exists",
             "P": "Proof of Concept Code",
             "F": "Functional Exploits exist",
-            "H": "High" }
-        REMIDATION_LEVEL = {"X": "Not defined",
+            "H": "High" 
+            }
+        REMIDATION_LEVEL = {
+            "X": "Not defined",
             "O": "Official Fix", 
             "T": "Temporary Fix", 
             "W": "Workaround", 
-            "U": "Unavailable"}
-        REPORT_CONFIDENCE = {"X": "Not defined",
+            "U": "Unavailable"
+            }
+        REPORT_CONFIDENCE = {
+            "X": "Not defined",
             "U": "Unknown",
             "R": "Reasonable",
-            "C": "Confirmed"}
+            "C": "Confirmed"
+            }
 
         temporary_score = self._view.set_temporary_metrics([EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
         print(self._model.set_temporary_metrics(temporary_score))
