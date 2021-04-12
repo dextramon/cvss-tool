@@ -2,8 +2,14 @@
 import math 
 import json
 
-with open('GUI_text.json') as f:
+########################
+### Json integration ###
+########################
+
+with open('data.json') as f:
     data = json.load(f)
+
+########################
 
 def round_up(n, decimals=0):
     multiplier = 10 ** decimals
@@ -16,44 +22,14 @@ class Controller:
         self._model = model
 
     def set_base_metrics(self):
-        ATTACK_VECTOR = {
-            "L": "Local >> The attacker must either have physical access to the vulnerable system (e.g. firewire attacks) or a local account (e.g. a privilege escalation attack). {0.55}", 
-            "A": "Adjances Network >> The attacker must have access to the broadcast or collision domain of the vulnerable system (e.g. ARP spoofing, Bluetooth attacks).	 {0.62}", 
-            "N": "Network >> The vulnerable interface is working at layer 3 or above of the OSI Network stack. These types of vulnerabilities are often described as remotely exploitable (e.g. a remote buffer overflow in a network service) {0.85}",
-            "P": "Physical Layer {0.2}"
-            }
-        ATTACK_COMPLEXITY = {
-            "H": "High >> Specialised conditions exist, such as a race condition with a narrow window, or a requirement for social engineering methods that would be readily noticed by knowledgeable people. {0.44}", 
-            "L": "Low >>There are no special conditions for exploiting the vulnerability, such as when the system is available to large numbers of users, or the vulnerable configuration is ubiquitous. {0.27}"
-            }
-        PRIVILEGES_REQUIRED = {
-            "H": "None >> Exploitation of the vulnerability requires that the attacker authenticate two or more times, even if the same credentials are used each time. {0.45}",
-            "L": "Low >> The attacker must authenticate once in order to exploit vulnerabiltiy {0.62}",
-            "N": "None >> There is no requirement for the attacker to authenticate {0.85}"
-            }
-        USER_INTERACTION = {
-            "N": "None {0.85}",
-            "R": "Required {0.62}"
-            }
-        SCOPE = {
-            "U": "Unchanged",
-            "C": "Changed"
-            }
-        CONFIDENTIALITY = {
-            "N": "None >> There is no impact on the confidentiality of the system {0.0}",
-            "L": "Low >> There is considerable disclosure of information, but the scope of the loss is constrained such that not all of the data is available. {0.22}",
-            "H": "High >> There is total information disclosure, providing access to any / all data on the system. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. {0.56}"
-            }
-        INTEGRITY = {
-            "N": "None >> There is no impact on the integrity of the system. {0.0}",
-            "L": "Low >> Modification of some data or system file is possible, but the scope of the modification is limited. {0.22}",
-            "H": "High >> There is total loss of integrity, the attacker can modify any files or information of the target system. {0.56}"
-            }
-        AVAILABILITY = {
-            "N": "None >> There is no impact of the availability of the system. {0.0}",
-            "L": "Low >> There is reduced performance or loss of some functionality. {0.22}",
-            "H": "High >> There is total loss of availability of the attacked resource. {0.56}"
-            }
+        ATTACK_VECTOR = data['set_base_metrics']['ATTACK_VECTOR']
+        ATTACK_COMPLEXITY = data['set_base_metrics']['ATTACK_COMPLEXITY']
+        PRIVILEGES_REQUIRED = data['set_base_metrics']['PRIVILEGES_REQUIRED']
+        USER_INTERACTION = data['set_base_metrics']['USER_INTERACTION']
+        SCOPE = data['set_base_metrics']['SCOPE']
+        CONFIDENTIALITY = data['set_base_metrics']['CONFIDENTIALITY']
+        INTEGRITY = data['set_base_metrics']['INTEGRITY']
+        AVAILABILITY = data['set_base_metrics']['AVAILABILITY']
 
         base_score = self._view.set_base_metrics([ATTACK_VECTOR, ATTACK_COMPLEXITY, PRIVILEGES_REQUIRED, USER_INTERACTION, SCOPE, 
             CONFIDENTIALITY, INTEGRITY, AVAILABILITY])
@@ -64,26 +40,9 @@ class Controller:
         self.set_impact_metrics()
 
     def set_impact_metrics(self):
-        EXPLOIT_CODE_MATURITY = {
-            "X": "Not defined",
-            "U": "Unproven that exploit exists",
-            "P": "Proof of Concept Code",
-            "F": "Functional Exploits exist",
-            "H": "High" 
-            }
-        REMIDATION_LEVEL = {
-            "X": "Not defined",
-            "O": "Official Fix", 
-            "T": "Temporary Fix", 
-            "W": "Workaround", 
-            "U": "Unavailable"
-            }
-        REPORT_CONFIDENCE = {
-            "X": "Not defined",
-            "U": "Unknown",
-            "R": "Reasonable",
-            "C": "Confirmed"
-            }
+        EXPLOIT_CODE_MATURITY = data['set_impact_metrics']['EXPLOIT_CODE_MATURITY']
+        REMIDATION_LEVEL = data['set_impact_metrics']['REMIDATION_LEVEL']
+        REPORT_CONFIDENCE = data['set_impact_metrics']['REPORT_CONFIDENCE']
 
         temporary_score = self._view.set_temporary_metrics([EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
         print(self._model.set_temporary_metrics(temporary_score))
