@@ -6,9 +6,14 @@ import json
 ### Json integration ###
 ########################
 
-with open('data.json') as f:
+### load data.json ##########
+with open('json/data.json') as f:
     data = json.load(f)
+########################
 
+### load template_output.json ########
+with open('json/template_output.json') as out:
+    JSON_OUT = json.load(out)
 ########################
 
 
@@ -50,6 +55,9 @@ class Controller:
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
         print(self._model.set_temporary_metrics(temporary_score))
 
+    def write_output(self): ## write the output to a new json file
+         with open('output.json', 'w') as out2:
+            out2.write(json.dumps(JSON_OUT, indent=4))
 
 class View:
     def __init__(self):
@@ -156,6 +164,9 @@ class Model:
             impact_subscore = ((7.52 * (impact - 0.029)) -
                                (3.25 * math.pow((impact - 0.02), 15)))
 
+        JSON_OUT['BASE_SCORE'] = exploitability       ## sets the BASE_SCORE value
+        JSON_OUT['IMPACT_SCORE'] = impact_subscore    ## sets the IMPACT_SCORE value
+
         print("BASE: " + str(exploitability))
         print("IMPACT: " + str(impact_subscore))
 
@@ -172,9 +183,9 @@ class Model:
         print(self._base_score)
         return self._base_score
 
-
 if __name__ == "__main__":
     v = View()
     m = Model()
     c = Controller(v, m)
     c.set_all()
+    c.write_output()
