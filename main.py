@@ -42,10 +42,6 @@ class Controller:
                                                   CONFIDENTIALITY, INTEGRITY, AVAILABILITY])
         print(self._model.set_base_metric(base_score))
 
-    def set_all(self):
-        self.set_base_metrics()
-        self.set_impact_metrics()
-
     def set_impact_metrics(self):
         EXPLOIT_CODE_MATURITY = data['set_impact_metrics']['EXPLOIT_CODE_MATURITY']
         REMIDATION_LEVEL = data['set_impact_metrics']['REMIDATION_LEVEL']
@@ -54,6 +50,21 @@ class Controller:
         temporary_score = self._view.set_temporary_metrics(
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
         print(self._model.set_temporary_metrics(temporary_score))
+
+    def set_environmental_metrics(self):
+        SECURITY_REQUIREMENTS = data['set_environmental_metrics']['SECURITY_REQUIREMENTS']
+        MODIFIED_BASE_METRICS = data['set_environmental_metrics'][' MODIFIED_BASE_METRICS']
+        QUALITATIVE_SEVERITY_RATING = data['set_environmental_metrics']['QUALITATIVE_SEVERITY_RATING']
+        VECTOR_STRING = data['set_environmental_metrics']['VECTOR_STRING']
+
+        environmental_score = self._view.set_environmental_metrics(
+            [SECURITY_REQUIREMENTS, MODIFIED_BASE_METRICS, QUALITATIVE_SEVERITY_RATING, VECTOR_STRING])
+        print(self._model.set_base_metric(environmental_score))
+
+    def set_all(self):
+        self.set_base_metrics()
+        self.set_impact_metrics()
+
 
     def write_output(self): ## write the output to a new json file
          with open('output.json', 'w') as out2:
@@ -85,7 +96,7 @@ class View:
             answer.append(a)
         return answer
 
-    def get_base_metrics():
+    def get_base_metrics(self):
         pass
 
 
@@ -182,6 +193,7 @@ class Model:
 
         print(self._base_score)
         return self._base_score
+
 
 if __name__ == "__main__":
     v = View()
