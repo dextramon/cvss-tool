@@ -1,5 +1,5 @@
 {
-  "set_base_metrics": {
+  "base_metric": {
     "ATTACK_VECTOR": {
       "L": "Local >> The attacker must either have physical access to the vulnerable system (e.g. firewire attacks) or a local account (e.g. a privilege escalation attack). {0.55}",
       "A": "Adjances Network >> The attacker must have access to the broadcast or collision domain of the vulnerable system (e.g. ARP spoofing, Bluetooth attacks). {0.62}",
@@ -39,8 +39,7 @@
       "H": "High >> There is total loss of availability of the attacked resource. {0.56}"
     }
   },
-  
-  "set_impact_metrics": {
+  "temp_metric": {
     "EXPLOIT_CODE_MATURITY": {
       "X": "Not defined",
       "U": "Unproven that exploit exists",
@@ -60,6 +59,26 @@
       "U": "Unknown",
       "R": "Reasonable",
       "C": "Confirmed"
+    }
+  }, "env_metric":
+  {
+    "CONFIDENTIALITY_REQUIREMENT": {
+      "X": "Not defined",
+      "L": "Low",
+      "M": "Medium",
+      "H": "High"
+    }, 
+    "INTEGRITY_REQUIREMENT": {
+      "X": "Not defined",
+      "L": "Low",
+      "M": "Medium",
+      "H": "High"
+    },
+    "AVAILABILITY_REQUIREMENT": {
+      "X": "Not defined",
+      "L": "Low",
+      "M": "Medium",
+      "H": "High"
     }
   }
 }
