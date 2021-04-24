@@ -6,16 +6,12 @@ import json
 ### Json integration ###
 ########################
 
-### load data.json ##########
-with open('json/data.json') as f:
+with open('data.json') as f:
     data = json.load(f)
+
 ########################
 
-### load template_output.json ########
-with open('json/template_output.json') as out:
-    JSON_OUT = json.load(out)
-########################
-
+# roundup to the first decimal 
 
 def round_up(n, decimals=0):
     multiplier = 10 ** decimals
@@ -28,51 +24,73 @@ class Controller:
         self._view = view
         self._model = model
 
+
+    # controller erechnet base metrics 
+
     def set_base_metrics(self):
-        ATTACK_VECTOR = data['set_base_metrics']['ATTACK_VECTOR']
-        ATTACK_COMPLEXITY = data['set_base_metrics']['ATTACK_COMPLEXITY']
-        PRIVILEGES_REQUIRED = data['set_base_metrics']['PRIVILEGES_REQUIRED']
-        USER_INTERACTION = data['set_base_metrics']['USER_INTERACTION']
-        SCOPE = data['set_base_metrics']['SCOPE']
-        CONFIDENTIALITY = data['set_base_metrics']['CONFIDENTIALITY']
-        INTEGRITY = data['set_base_metrics']['INTEGRITY']
-        AVAILABILITY = data['set_base_metrics']['AVAILABILITY']
+        ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
+        ATTACK_COMPLEXITY = data['base_metric']['ATTACK_COMPLEXITY']
+        PRIVILEGES_REQUIRED = data['base_metric']['PRIVILEGES_REQUIRED']
+        USER_INTERACTION = data['base_metric']['USER_INTERACTION']
+        SCOPE = data['base_metric']['SCOPE']
+        CONFIDENTIALITY = data['base_metric']['CONFIDENTIALITY']
+        INTEGRITY = data['base_metric']['INTEGRITY']
+        AVAILABILITY = data['base_metric']['AVAILABILITY']
 
         base_score = self._view.set_base_metrics([ATTACK_VECTOR, ATTACK_COMPLEXITY, PRIVILEGES_REQUIRED, USER_INTERACTION, SCOPE,
                                                   CONFIDENTIALITY, INTEGRITY, AVAILABILITY])
         print(self._model.set_base_metric(base_score))
 
-    def set_impact_metrics(self):
-        EXPLOIT_CODE_MATURITY = data['set_impact_metrics']['EXPLOIT_CODE_MATURITY']
-        REMIDATION_LEVEL = data['set_impact_metrics']['REMIDATION_LEVEL']
-        REPORT_CONFIDENCE = data['set_impact_metrics']['REPORT_CONFIDENCE']
-
-        temporary_score = self._view.set_temporary_metrics(
-            [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
-        print(self._model.set_temporary_metrics(temporary_score))
-
-    def set_environmental_metrics(self):
-        SECURITY_REQUIREMENTS = data['set_environmental_metrics']['SECURITY_REQUIREMENTS']
-        MODIFIED_BASE_METRICS = data['set_environmental_metrics'][' MODIFIED_BASE_METRICS']
-        QUALITATIVE_SEVERITY_RATING = data['set_environmental_metrics']['QUALITATIVE_SEVERITY_RATING']
-        VECTOR_STRING = data['set_environmental_metrics']['VECTOR_STRING']
-
-        environmental_score = self._view.set_environmental_metrics(
-            [SECURITY_REQUIREMENTS, MODIFIED_BASE_METRICS, QUALITATIVE_SEVERITY_RATING, VECTOR_STRING])
-        print(self._model.set_base_metric(environmental_score))
-
     def set_all(self):
         self.set_base_metrics()
-        self.set_impact_metrics()
+        self.set_temp_metrics()
+        self.set_env_metrics()
 
+    # BERECHNUNG DES ENVIRONMENTAL SCORE
 
-    def write_output(self): ## write the output to a new json file
-         with open('output.json', 'w') as out2:
-            out2.write(json.dumps(JSON_OUT, indent=4))
+    def set_env_metrics(self):
+        ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
+        ATTACK_VECTOR["X"] = "Not Defined"
+        ATTACK_COMPLEXITY = data['base_metric']['ATTACK_COMPLEXITY']
+        ATTACK_COMPLEXITY["X"] = "Not Defined"
+        PRIVILEGES_REQUIRED = data['base_metric']['PRIVILEGES_REQUIRED']
+        PRIVILEGES_REQUIRED["X"] = "Not Defined"
+        USER_INTERACTION = data['base_metric']['USER_INTERACTION']
+        USER_INTERACTION["X"] = "Not Defined"
+        SCOPE = data['base_metric']['SCOPE']
+        SCOPE["X"] = "Not Defined"
+        CONFIDENTIALITY = data['base_metric']['CONFIDENTIALITY']
+        CONFIDENTIALITY["X"] = "Not Defined"
+        INTEGRITY = data['base_metric']['INTEGRITY']
+        INTEGRITY["X"] = "Not Defined"
+        AVAILABILITY = data['base_metric']['AVAILABILITY']
+        AVAILABILITY["X"] = "Not Defined"
+        CONFIDENTIALITY_REQUIREMENT = data["env_metric"]["CONFIDENTIALITY_REQUIREMENT"]
+        INTEGRITY_REQUIREMENT = data["env_metric"]["INTEGRITY_REQUIREMENT"]
+        AVAILABILITY_REQUIREMENT = data["env_metric"]["AVAILABILITY_REQUIREMENT"]
+
+        environmental_score = self._view.set_env_metrics([ATTACK_VECTOR, ATTACK_COMPLEXITY, PRIVILEGES_REQUIRED, USER_INTERACTION, SCOPE,
+                                                  CONFIDENTIALITY, INTEGRITY, AVAILABILITY, CONFIDENTIALITY_REQUIREMENT,
+                                                  INTEGRITY_REQUIREMENT, AVAILABILITY_REQUIREMENT])
+        print(self._model.set_env_metrics(environmental_score))
+
+    # DER CONTROLLER BEKOMMT DIE IMPACT METRIC ZUGEWIESEN
+
+    def set_temp_metrics(self):
+        EXPLOIT_CODE_MATURITY = data['temp_metric']['EXPLOIT_CODE_MATURITY']
+        REMIDATION_LEVEL = data['temp_metric']['REMIDATION_LEVEL']
+        REPORT_CONFIDENCE = data['temp_metric']['REPORT_CONFIDENCE']
+
+        temporary_score = self._view.set_temp_metrics(
+            [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
+        print(self._model.set_temp_metrics(temporary_score))
+
 
 class View:
     def __init__(self):
         pass
+
+    # view for set_base_metrics 
 
     def set_base_metrics(self, metrics):
         answer = []
@@ -85,7 +103,9 @@ class View:
             answer.append(a)
         return answer
 
-    def set_temporary_metrics(self, metrics):
+    # view for set_env_metrics
+    
+    def set_env_metrics(self, metrics):
         answer = []
         for m in metrics:
             for i in m:
@@ -96,52 +116,52 @@ class View:
             answer.append(a)
         return answer
 
-    def get_base_metrics(self):
-        pass
+    # view for set_temp_metrics
 
+    def set_temp_metrics(self, metrics):
+        answer = []
+        for m in metrics:
+            for i in m:
+                print(i + ": " + m[i])
+            a = input().upper()
+            while a not in m:
+                a = input().upper()
+            answer.append(a)
+        return answer
 
 class Model:
     def __init__(self):
         self._base_metrics = None
         self._temporary_metrics = None
+        self._temp_score_vec = None
         self._complexity = None
         self._impact = None
         self._base_score = None
+        self._base_score_vec = None
+        self._env_score = None
+        self._env_score_vec = None
 
-    def get_impact_function(self):
+    def _get_impact_function(self):
         if self._impact == 0:
             return 0
         else:
             return 1.176
 
-    def set_temporary_metrics(self, new_temporary):
-        self._temporary_metrics = new_temporary
-        return self._calculate_temporary_score(self._temporary_metrics)
+    # set metrics
 
     def set_base_metric(self, new_base):
         self._base_metrics = new_base
         self._calculate_base_score(self._base_metrics)
 
-    def _calculate_temporary_score(self, li):
+    def set_temp_metrics(self, new_temporary):
+        self._temporary_metrics = new_temporary
+        return self._calculate_temp_score(self._temporary_metrics)
 
-        print(li)
+    def set_env_metrics(self, new_env): 
+        self._env_metrics = new_env
+        self._calculate_env_score(self._env_score)
 
-        EXPLOIT_CODE_MATURITY_VALUE = {
-            "X": 1, "U": 0.91, "P": 0.94, "F": 0.97, "H": 1}
-        REMIDATION_LEVEL_VALUE = {
-            "X": 1, "O": 0.95, "T": 0.96, "W": 0.97, "U": 1}
-        REPORT_CONFIDENCE_VALUE = {"X": 1, "U": 0.92, "R": 0.96, "C": 1}
-
-        temporary_score = []
-
-        temporary_score.append(EXPLOIT_CODE_MATURITY_VALUE[li[0]])
-        temporary_score.append(REMIDATION_LEVEL_VALUE[li[1]])
-        temporary_score.append(REPORT_CONFIDENCE_VALUE[li[2]])
-
-        self._temporary_metrics = round_up(
-            (self._base_score * temporary_score[0] * temporary_score[1] * temporary_score[2]), 1)
-
-        return self._temporary_metrics
+    # calculation for the score of each three
 
     def _calculate_base_score(self, inp):
         print(inp)
@@ -149,7 +169,10 @@ class Model:
         ATTACK_COMPLEXITY_VALUE = {"H": 0.44, "L": 0.77}
         PRIVILEGES_VALUE = {"H": 0.27, "L": 0.62, "N": 0.85}
         USER_INTERACTION_VALUE = {"N": 0.85, "R": 0.62}
+        # CONTAINS CONFINDENTIALITY, INTEGRITY AND AVAILABILITY
         AVAILABILITY_VALUE = {"H": 0.56, "L": 0.22, "N": 0}
+
+        self._base_score_vec = f"AV:{inp[0]}/AC:{inp[1]}/PR:{inp[2]}/UI:{inp[3]}/S:{inp[4]}/C:{inp[5]}/I:{inp[6]}/A:{inp[7]}"
 
         base_score = []
 
@@ -175,9 +198,6 @@ class Model:
             impact_subscore = ((7.52 * (impact - 0.029)) -
                                (3.25 * math.pow((impact - 0.02), 15)))
 
-        JSON_OUT['BASE_SCORE'] = exploitability       ## sets the BASE_SCORE value
-        JSON_OUT['IMPACT_SCORE'] = impact_subscore    ## sets the IMPACT_SCORE value
-
         print("BASE: " + str(exploitability))
         print("IMPACT: " + str(impact_subscore))
 
@@ -192,7 +212,59 @@ class Model:
                     (1.08 * (impact_subscore+exploitability)), 1)
 
         print(self._base_score)
+        print(self._base_score_vec)
         return self._base_score
+
+    def _calculate_temp_score(self, li):
+
+        print(li)
+
+        EXPLOIT_CODE_MATURITY_VALUE = {
+            "X": 1, "U": 0.91, "P": 0.94, "F": 0.97, "H": 1}
+        REMIDATION_LEVEL_VALUE = {
+            "X": 1, "O": 0.95, "T": 0.96, "W": 0.97, "U": 1}
+        REPORT_CONFIDENCE_VALUE = {"X": 1, "U": 0.92, "R": 0.96, "C": 1}
+
+        self._temp_score_vec = f"E:{li[0]}/RL:{li[1]}/RC:{li[2]}"
+
+        temporary_score = []
+
+        temporary_score.append(EXPLOIT_CODE_MATURITY_VALUE[li[0]])
+        temporary_score.append(REMIDATION_LEVEL_VALUE[li[1]])
+        temporary_score.append(REPORT_CONFIDENCE_VALUE[li[2]])
+
+        self._temporary_metrics = round_up(
+            (self._base_score * temporary_score[0] * temporary_score[1] * temporary_score[2]), 1)
+
+        print(self._temp_score_vec)
+
+        return self._temporary_metrics
+
+    def _calculate_env_score(self, inp):
+        print(inp)
+        ATTACK_VECTOR_VALUE = {"X": 0, "L": 0.55, "A": 0.62, "N": 0.55, "P": 0.2}
+        ATTACK_COMPLEXITY_VALUE = {"X": 0, "H": 0.44, "L": 0.77}
+        PRIVILEGES_VALUE = {"X": 0, "H": 0.27, "L": 0.62, "N": 0.85}
+        USER_INTERACTION_VALUE = {"X": 0,"N": 0.85, "R": 0.62}
+        AVAILABILITY_VALUE = {"X": 0,"H": 0.56, "L": 0.22, "N": 0}
+        AVAILABILITY_REQUIREMENT_VALUE = {"X": 1.0, "H": 1.5, "L": 1.0, "N": 0.5}
+
+        self._env_score_vec = f"CR:{inp[8]}/IR:{inp[9]}/AR:{inp[10]}/MAV:{inp[0]}/MAC:{inp[1]}/MPR:{inp[2]}/MUI:{inp[3]}/MS:{inp[4]}/MC:{inp[5]}/MI:{inp[6]}/MA:{inp[7]}"
+        env_score = []
+
+        env_score.append(ATTACK_VECTOR_VALUE[inp[0]])
+        env_score.append(ATTACK_COMPLEXITY_VALUE[inp[1]])
+        env_score.append(PRIVILEGES_VALUE[inp[2]])
+        env_score.append(USER_INTERACTION_VALUE[inp[3]])
+        env_score.append(AVAILABILITY_VALUE[inp[5]])  # Confidentiality
+        env_score.append(AVAILABILITY_VALUE[inp[6]])  # Integrity
+        env_score.append(AVAILABILITY_VALUE[inp[7]])  # Availability
+        env_score.append(AVAILABILITY_REQUIREMENT_VALUE[inp[8]])
+        env_score.append(AVAILABILITY_REQUIREMENT_VALUE[inp[9]])
+        env_score.append(AVAILABILITY_REQUIREMENT_VALUE[inp[10]])
+
+        print(self._env_score_vec)
+        return 0
 
 
 if __name__ == "__main__":
@@ -200,4 +272,3 @@ if __name__ == "__main__":
     m = Model()
     c = Controller(v, m)
     c.set_all()
-    c.write_output()
