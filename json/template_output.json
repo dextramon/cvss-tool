@@ -1,7 +1,7 @@
 {
-    "VEKTOR" : "",
-    "BASE_SCORE": "",
-    "TEMPORAL_SCORE": "",
-    "ENVIRONMENTAL_SCORE": "",
-    "IMPACT_SCORE":""
+    "asset_name": "",
+    "vektor" : "",
+    "base_score": "",
+    "temp_score": "",
+    "env_score": ""
 }
