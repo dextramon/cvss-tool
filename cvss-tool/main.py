@@ -76,6 +76,7 @@ class Controller:
         print(self._model.get_env_score())
         self.print_json()
         self.print_pdf()
+        self.print_txt()
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -139,7 +140,18 @@ class Controller:
 
 
     def print_txt(self): 
-        pass
+        with open('templates/template_output_txt.txt' , 'r') as file:
+            TXT_OUT = file.read()
+            TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_name())
+            TXT_OUT = TXT_OUT.replace('$vektor$', str(self._model.get_vector()))
+            TXT_OUT = TXT_OUT.replace('$base_score$', str(self._model.get_base_score()))
+            TXT_OUT = TXT_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
+            TXT_OUT = TXT_OUT.replace('$env_score$', str(self._model.get_env_score()))
+
+            create_name = self._model.get_name() + '_output.txt'
+
+            with open(create_name , 'w') as output:
+                output.write(TXT_OUT)
 
     def print_pdf(self): 
         with open('templates/template_output_tex.tex' , 'r') as file:

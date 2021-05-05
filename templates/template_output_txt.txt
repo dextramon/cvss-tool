@@ -1,8 +1,8 @@
-Für das Asset {name} wurde ein Base Score von {base_score} errechnet. 
+Für das Asset $asset_name$ wurde ein Base Score von $base_score$ errechnet. 
 
-Base Score: {base_score}
-Temporal Score: {temp_score}
-Environmental Score: {env_score}
+Base Score: $base_score$
+Temporal Score: $temp_score$
+Environmental Score: $env_score$
 
-Der CVSS 3.1 Vektor lautet: {vector}
+Der CVSS 3.1 Vektor lautet: $vektor$
 
