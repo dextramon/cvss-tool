@@ -75,7 +75,7 @@ class Controller:
         print(self._model.get_temp_score())
         print(self._model.get_env_score())
         self.print_json()
-        self.print_pdf()
+        # self.print_pdf()
         self.print_txt()
 
     def _calculate_base_score(self):
