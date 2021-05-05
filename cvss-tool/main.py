@@ -155,13 +155,13 @@ class Controller:
             with open(create_name , 'w') as output:
                 output.write(PDF_OUT)
 
-        x = subprocess.call('pdflatex ' + create_name)
+        subprocess.call('pdflatex ' + create_name)
 
-        extensions = ['.aux','.bcf','.lof','.log','.lot','.out','.run.xml','.toc' ,'.tex']
-        os1 = {'Linux' : 'rm', 'Darwin': 'rm', 'Windows': 'del'}
-        opertor = os1[platform.system()]
-        for i in range(len(extensions)):
-            os.system(opertor + ' ' + self._model.get_name()+ '_output' + extensions[i])
+        EXTENSIONS = ['.aux','.bcf','.lof','.log','.lot','.out','.run.xml','.toc' ,'.tex']
+        OS_DIC = {'Linux' : 'rm', 'Darwin': 'rm', 'Windows': 'del'}
+        OPERTOR = OS_DIC[platform.system()]
+        for i in range(len(EXTENSIONS)):
+            os.system(OPERTOR + ' ' + self._model.get_name()+ '_output' + EXTENSIONS[i])
 
 
     def _set_name(self):
