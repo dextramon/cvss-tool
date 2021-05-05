@@ -1,0 +1,76 @@
+\documentclass[12pt,oneside]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Zusaetzliche Pakete  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{enumerate}  
+\usepackage{fancyhdr}
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{palatino}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{acronym}% http://ctan.org/pkg/acronym
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
+
+%folgende Zeile auskommentieren für englische Arbeiten
+\usepackage[ngerman]{babel}
+%folgende Zeile auskommentieren für deutsche Arbeiten
+%\usepackage[ngerman, english]{babel}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[bookmarks]{hyperref}
+\usepackage[justification=centering]{caption}
+\usepackage[style=authoryear,natbib=true,backend=biber,maxbibnames=20]{biblatex}
+\usepackage{csquotes}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage{bchart}
+\setlength{\parindent}{0em} 
+\setlist[itemize]{noitemsep, topsep=0pt}
+\setlist[enumerate]{noitemsep, topsep=0pt}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Beginn des Dokuments  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\definecolor{myblue}{HTML}{92dcec}
+\section{$asset_name$}
+\begin{tikzpicture}
+	
+	\draw (0cm,0cm) -- (5.5cm,0cm);  %Abzisse
+	\draw (0cm,0cm) -- (0cm,-0.1cm);
+	\draw (5.5cm,0cm) -- (5.5cm,-0.1cm);
+	
+	\draw (-0.1cm,0cm) -- (-0.1cm,4.5cm);  %Ordinate
+	\draw (-0.1cm,0cm) -- (-0.2cm,0cm); 
+	\draw (-0.1cm,4.5cm) -- (-0.2cm,4.5cm);
+	
+	
+	\foreach \x in {1,...,10}
+	\draw[gray!50, text=black] (-0.2 cm,\x cm) -- (15.5 cm,\x cm) 
+	node at (-0.5 cm,\x cm) {\x};
+	
+	\draw[fill=myblue] (0.5cm,0cm) rectangle (1.5cm,4.1cm)
+	node at (1cm,4.4cm) {4.1};   
+	\node[rotate=45, left] at (1cm, -0.1cm) {Rumänien};
+	
+\end{tikzpicture}
+\hfill
+\begin{tikzpicture}
+	
+	\draw (0cm,0cm) -- (5.5cm,0cm);  %Abzisse
+	\draw (0cm,0cm) -- (0cm,-0.1cm);
+	\draw (5.5cm,0cm) -- (5.5cm,-0.1cm);
+	
+	\draw (-0.1cm,0cm) -- (-0.1cm,4.5cm);  %Ordinate
+	\draw (-0.1cm,0cm) -- (-0.2cm,0cm); 
+	\draw (-0.1cm,4.5cm) -- (-0.2cm,4.5cm) node [left] {\%};
+	
+\end{tikzpicture}
+
+
+\end{document}

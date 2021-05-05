@@ -75,6 +75,7 @@ class Controller:
         print(self._model.get_temp_score())
         print(self._model.get_env_score())
         self.print_json()
+        self.print_pdf()
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -122,7 +123,7 @@ class Controller:
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
 
     def print_json(self): 
-        with open('templates/template_output.json') as out:
+        with open('templates/template_output_json.json') as out:
             JSON_OUT = json.load(out)
         
         JSON_OUT['asset_name'] = self._model.get_name()
@@ -141,7 +142,27 @@ class Controller:
         pass
 
     def print_pdf(self): 
-        pass
+        with open('templates/template_output_tex.tex' , 'r') as file:
+            PDF_OUT = file.read()
+            PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_name())
+            PDF_OUT = PDF_OUT.replace('$vektor$', str(self._model.get_vector()))
+            PDF_OUT = PDF_OUT.replace('$base_score$', str(self._model.get_base_score()))
+            PDF_OUT = PDF_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
+            PDF_OUT = PDF_OUT.replace('$env_score$', str(self._model.get_env_score()))
+
+            create_name = self._model.get_name() + '_output.tex'
+
+            with open(create_name , 'w') as output:
+                output.write(PDF_OUT)
+
+        x = subprocess.call('pdflatex ' + create_name)
+
+        extensions = ['.aux','.bcf','.lof','.log','.lot','.out','.run.xml','.toc' ,'.tex']
+        os1 = {'Linux' : 'rm', 'Darwin': 'rm', 'Windows': 'del'}
+        opertor = os1[platform.system()]
+        for i in range(len(extensions)):
+            os.system(opertor + ' ' + self._model.get_name()+ '_output' + extensions[i])
+
 
     def _set_name(self):
         print(self._view.get_name())
