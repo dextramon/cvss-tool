@@ -5,4 +5,3 @@ Temporal Score: $temp_score$
 Environmental Score: $env_score$
 
 Der CVSS 3.1 Vektor lautet: $vektor$
-
