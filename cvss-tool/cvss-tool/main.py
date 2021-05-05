@@ -2,12 +2,9 @@
 import re 
 import math
 import json
-import subprocess
-import os
-import platform
 
 #JSON Integration
-with open('templates/data.json') as f:
+with open('../templates/data.json') as f:
     data = json.load(f)
 
 #round-up 
@@ -57,6 +54,13 @@ class View:
             answer.append(a)
         return f"/CR:{answer[0]}/IR:{answer[1]}/AR:{answer[2]}/MAV:{answer[3]}/MAC:{answer[4]}/MPR:{answer[5]}/MUI:{answer[6]}/MS:{answer[7]}/MC:{answer[8]}/MI:{answer[9]}/MA:{answer[10]}"
 
+    def get_p(self, metrics): 
+        a = ""
+        for m in metrics:
+            print((m + ": " + metrics[m]))
+
+        a = input()
+        return a 
     
 class Controller: 
     def __init__(self): 
@@ -74,9 +78,24 @@ class Controller:
         print(self._model.get_base_score())
         print(self._model.get_temp_score())
         print(self._model.get_env_score())
-        self.print_json()
-        # self.print_pdf()
-        self.print_txt()
+        print(self._model.get_vector())
+        values =  {"1": "Create PDF", "2": "Create TXT", "3": "Create JSON", "4": "Exit"}
+        get_input = self._view.get_p(values)
+        while get_input != "4": 
+            if(get_input == "1" and "1" in values): 
+                print("PDF goes brrrrrrrr")
+                del values["1"]
+            elif(get_input == "2" and "2" in values): 
+                del values["2"]
+                self.print_txt()
+            elif(get_input == "3" and "3" in values): 
+                del values["3"]
+                self.print_json()
+            else:
+                pass
+
+            get_input = self._view.get_p(values)
+        
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -124,7 +143,7 @@ class Controller:
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
 
     def print_json(self): 
-        with open('templates/template_output_json.json') as out:
+        with open('../templates/template_output_json.json') as out:
             JSON_OUT = json.load(out)
         
         JSON_OUT['asset_name'] = self._model.get_name()
@@ -138,9 +157,8 @@ class Controller:
         with open(create_name, 'w') as out2:
             out2.write(json.dumps(JSON_OUT, indent=4))
 
-
     def print_txt(self): 
-        with open('templates/template_output_txt.txt' , 'r') as file:
+        with open('../templates/template_output_txt.txt' , 'r') as file:
             TXT_OUT = file.read()
             TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_name())
             TXT_OUT = TXT_OUT.replace('$vektor$', str(self._model.get_vector()))
@@ -152,29 +170,6 @@ class Controller:
 
             with open(create_name , 'w') as output:
                 output.write(TXT_OUT)
-
-    def print_pdf(self): 
-        with open('templates/template_output_tex.tex' , 'r') as file:
-            PDF_OUT = file.read()
-            PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_name())
-            PDF_OUT = PDF_OUT.replace('$vektor$', str(self._model.get_vector()))
-            PDF_OUT = PDF_OUT.replace('$base_score$', str(self._model.get_base_score()))
-            PDF_OUT = PDF_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
-            PDF_OUT = PDF_OUT.replace('$env_score$', str(self._model.get_env_score()))
-
-            create_name = self._model.get_name() + '_output.tex'
-
-            with open(create_name , 'w') as output:
-                output.write(PDF_OUT)
-
-        subprocess.call('pdflatex ' + create_name)
-
-        EXTENSIONS = ['.aux','.bcf','.lof','.log','.lot','.out','.run.xml','.toc' ,'.tex']
-        OS_DIC = {'Linux' : 'rm', 'Darwin': 'rm', 'Windows': 'del'}
-        OPERTOR = OS_DIC[platform.system()]
-        for i in range(len(EXTENSIONS)):
-            os.system(OPERTOR + ' ' + self._model.get_name()+ '_output' + EXTENSIONS[i])
-
 
     def _set_name(self):
         print(self._view.get_name())
@@ -191,7 +186,7 @@ class Vulnerability:
         self._env_score = None
 
     def _calculate_base_score(self): 
-        AVV = {"L": 0.55, "A": 0.62, "N": 0.55, "P": 0.2}
+        AVV = {"L": 0.55, "A": 0.62, "N": 0.85, "P": 0.2}
         ACV = {"H": 0.44, "L": 0.77}
         PRV = {"H": 0.27, "L": 0.62, "N": 0.85}
         UIV = {"N": 0.85, "R": 0.62}
@@ -199,9 +194,6 @@ class Vulnerability:
         AVAILABILITY_VALUE = {"H": 0.56, "L": 0.22, "N": 0}
 
         #impact sub-score
-        print(self._tv["C"])
-        print(self._tv["I"])
-        print(self._tv["A"])
         iss = 1 - ((1-AVAILABILITY_VALUE[self._tv["C"]])*(1-AVAILABILITY_VALUE[self._tv["I"]])*(1-AVAILABILITY_VALUE[self._tv["A"]]))
         
         impact = 0 
@@ -211,6 +203,7 @@ class Vulnerability:
 
         if(self._tv["S"] == "C"):
             impact = 7.52*(iss-0.029)-3.25*pow((iss-0.02), 15)
+            PRV = {"N": 0.85, "L": 0.68, "H": 0.5}
 
         exploitability = 8.22*AVV[self._tv["AV"]]*ACV[self._tv["AC"]]*PRV[self._tv["PR"]]*UIV[self._tv["UI"]]
 
@@ -236,14 +229,14 @@ class Vulnerability:
         print(self._temp_score)
 
     def _calculate_env_score(self):
-        AVVO = {"L": 0.55, "A": 0.62, "N": 0.55, "P": 0.2}
+        AVVO = {"L": 0.55, "A": 0.62, "N": 0.85, "P": 0.2}
         ACVO = {"H": 0.44, "L": 0.77}
         PRVO = {"H": 0.27, "L": 0.62, "N": 0.85}
         UIVO = {"N": 0.85, "R": 0.62}
         # CONTAINS CONFINDENTIALITY, INTEGRITY AND AVAILABILITY
         AVO = {"H": 0.56, "L": 0.22, "N": 0}
 
-        AVV = {"X": AVVO[self._tv["AV"]], "L": 0.55, "A": 0.62, "N": 0.55, "P": 0.2}
+        AVV = {"X": AVVO[self._tv["AV"]], "L": 0.55, "A": 0.62, "N": 0.85, "P": 0.2}
         ACV = {"X": ACVO[self._tv["AC"]], "H": 0.44, "L": 0.77}
         PRV = {"X": PRVO[self._tv["PR"]], "H": 0.27, "L": 0.62, "N": 0.85}
         UIV = {"X": UIVO[self._tv["UI"]],"N": 0.85, "R": 0.62}
@@ -266,6 +259,8 @@ class Vulnerability:
         
         if(( self._tv["MS"] == "C" ) or ( self._tv["S"] == "C" and self._tv["MS"] == "X" ) ): 
             modified_impact = 7.52*(miss-0.029)-3.25*pow((miss*0.9731-0.02), 13)
+            PRV = {"X": PRVO[self._tv["PR"]], "H": 0.5, "L": 0.68, "N": 0.85}
+
 
         modified_exploitability = 8.22*AVV[self._tv["MAV"]]*ACV[self._tv["MAC"]]*PRV[self._tv["MPR"]]*UIV[self._tv["MUI"]]
 
@@ -395,7 +390,10 @@ class Vulnerability:
         return self._tv[name] 
 
     def get_vector(self): 
-        return self._tv
+        vector = f"AV:{self._tv['AV']}"
+        for key in self._tv: 
+            vector += f"/{key}:{self._tv[key]}"
+        return vector
 
     def set_name(self, name):
         self._name = name
