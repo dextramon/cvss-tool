@@ -2,9 +2,12 @@
 import re 
 import math
 import json
+import subprocess
+import os
+import platform
 
 #JSON Integration
-with open('../json/data.json') as f:
+with open('templates/data.json') as f:
     data = json.load(f)
 
 #round-up 
@@ -71,6 +74,7 @@ class Controller:
         print(self._model.get_base_score())
         print(self._model.get_temp_score())
         print(self._model.get_env_score())
+        self.print_json()
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -118,9 +122,25 @@ class Controller:
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
 
     def print_json(self): 
-        pass
+        with open('templates/template_output.json') as out:
+            JSON_OUT = json.load(out)
+        
+        JSON_OUT['asset_name'] = self._model.get_name()
+        JSON_OUT['vektor'] = self._model.get_vector()
+        JSON_OUT['base_score'] = self._model.get_base_score()
+        JSON_OUT['temp_score'] = self._model.get_temp_score()
+        JSON_OUT['env_score'] = self._model.get_env_score()
+
+        create_name = self._model.get_name() + '_output.json'
+        
+        with open(create_name, 'w') as out2:
+            out2.write(json.dumps(JSON_OUT, indent=4))
+
 
     def print_txt(self): 
+        pass
+
+    def print_pdf(self): 
         pass
 
     def _set_name(self):
