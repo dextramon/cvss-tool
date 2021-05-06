@@ -68,8 +68,11 @@ class Controller:
 
     def main_loop(self): 
         self._model.set_name(self._view.get_name())
+        print("BASE SCORE:")
         vector_string = self._calculate_base_score()
+        print("TEMPORAL SCORE:")
         vector_string += self._calculate_temp_score()
+        print("ENVIRONMENTAL SCORE")
         vector_string += self._calculate_env_score()
         self._model.set_vector(vector_string)
         print(f"Asset Name: {self._model.get_name()}")
