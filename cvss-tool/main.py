@@ -4,7 +4,7 @@ import math
 import json
 
 #JSON Integration
-with open('../templates/data.json') as f:
+with open('templates/data.json') as f:
     data = json.load(f)
 
 #round-up 
@@ -144,7 +144,7 @@ class Controller:
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
 
     def print_json(self): 
-        with open('../templates/template_output_json.json') as out:
+        with open('templates/template_output_json.json') as out:
             JSON_OUT = json.load(out)
         
         JSON_OUT['asset_name'] = self._model.get_name()
@@ -159,7 +159,7 @@ class Controller:
             out2.write(json.dumps(JSON_OUT, indent=4))
 
     def print_txt(self): 
-        with open('../templates/template_output_txt.txt' , 'r') as file:
+        with open('templates/template_output_txt.txt' , 'r') as file:
             TXT_OUT = file.read()
             TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_name())
             TXT_OUT = TXT_OUT.replace('$vektor$', str(self._model.get_vector()))
