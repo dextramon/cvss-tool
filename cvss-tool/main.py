@@ -12,7 +12,6 @@ def round_up(n, decimals=0):
     multiplier = 10 ** decimals
     return math.ceil(n * multiplier) / multiplier
 
-
 class View: 
     def __init__(self):
         pass
@@ -54,13 +53,13 @@ class View:
             answer.append(a)
         return f"/CR:{answer[0]}/IR:{answer[1]}/AR:{answer[2]}/MAV:{answer[3]}/MAC:{answer[4]}/MPR:{answer[5]}/MUI:{answer[6]}/MS:{answer[7]}/MC:{answer[8]}/MI:{answer[9]}/MA:{answer[10]}"
 
-    def get_p(self, metrics): 
-        a = ""
-        for m in metrics:
-            print((m + ": " + metrics[m]))
+    def get_option(self, options): 
+        answer = ""
+        for i in options:
+            print((i + ": " + options[i]))
 
-        a = input()
-        return a 
+        answer = input()
+        return answer
     
 class Controller: 
     def __init__(self): 
@@ -72,18 +71,17 @@ class Controller:
         vector_string = self._calculate_base_score()
         vector_string += self._calculate_temp_score()
         vector_string += self._calculate_env_score()
-        print(vector_string)
         self._model.set_vector(vector_string)
-        print(self._model.get_name())
-        print(self._model.get_base_score())
-        print(self._model.get_temp_score())
-        print(self._model.get_env_score())
-        print(self._model.get_vector())
+        print(f"Asset Name: {self._model.get_name()}")
+        print(f"Base Score: {self._model.get_base_score()}")
+        print(f"Temporal Score: {self._model.get_temp_score()}")
+        print(f"Environmental Score: {self._model.get_env_score()}")
+        print(f"CVSS3.1 Vektor: {self._model.get_vector()}")
         values =  {"1": "Create PDF", "2": "Create TXT", "3": "Create JSON", "4": "Exit"}
-        get_input = self._view.get_p(values)
+        get_input = self._view.get_option(values)
         while get_input != "4": 
             if(get_input == "1" and "1" in values): 
-                print("PDF goes brrrrrrrr")
+                #print("PDF goes brrrrrrrr")
                 del values["1"]
             elif(get_input == "2" and "2" in values): 
                 del values["2"]
@@ -94,7 +92,7 @@ class Controller:
             else:
                 pass
 
-            get_input = self._view.get_p(values)
+            get_input = self._view.get_option(values)
         
 
     def _calculate_base_score(self):
@@ -203,6 +201,7 @@ class Vulnerability:
 
         if(self._tv["S"] == "C"):
             impact = 7.52*(iss-0.029)-3.25*pow((iss-0.02), 15)
+            # H and L are changing their value if scope is changed
             PRV = {"N": 0.85, "L": 0.68, "H": 0.5}
 
         exploitability = 8.22*AVV[self._tv["AV"]]*ACV[self._tv["AC"]]*PRV[self._tv["PR"]]*UIV[self._tv["UI"]]
@@ -216,8 +215,6 @@ class Vulnerability:
         else: 
             print("ERRO")
 
-        print(self._base_score)
-
     def _calculate_temp_score(self): 
         ECMV = {
             "X": 1, "U": 0.91, "P": 0.94, "F": 0.97, "H": 1}
@@ -226,9 +223,9 @@ class Vulnerability:
         RCV = {"X": 1, "U": 0.92, "R": 0.96, "C": 1}
 
         self._temp_score = round_up(( self._base_score * ECMV[self._tv["E"]] * RLV[self._tv["RL"]] * RCV[self._tv["RC"]] ), 1)
-        print(self._temp_score)
 
     def _calculate_env_score(self):
+        #attack vector value old
         AVVO = {"L": 0.55, "A": 0.62, "N": 0.85, "P": 0.2}
         ACVO = {"H": 0.44, "L": 0.77}
         PRVO = {"H": 0.27, "L": 0.62, "N": 0.85}
@@ -259,12 +256,11 @@ class Vulnerability:
         
         if(( self._tv["MS"] == "C" ) or ( self._tv["S"] == "C" and self._tv["MS"] == "X" ) ): 
             modified_impact = 7.52*(miss-0.029)-3.25*pow((miss*0.9731-0.02), 13)
+            # H and L are changing their value if scope is changed
             PRV = {"X": PRVO[self._tv["PR"]], "H": 0.5, "L": 0.68, "N": 0.85}
 
 
         modified_exploitability = 8.22*AVV[self._tv["MAV"]]*ACV[self._tv["MAC"]]*PRV[self._tv["MPR"]]*UIV[self._tv["MUI"]]
-
-        print(modified_impact)
 
         if(modified_impact <= 0): 
             self._env_score = 0
@@ -300,7 +296,7 @@ class Vulnerability:
             input_vector = re.sub(base_score_part, '', input_vector)
         else: 
             return False
-        print(input_vector)
+
         """
         COMMENT:
         As NIST and first use different techniques to calculate their score (NIST fills empty metrices with an X if at least one of temp or env has a value != 'X')
@@ -337,8 +333,6 @@ class Vulnerability:
         COMMENT:
         after removing valid parts from the string, the string has to be empty otherwise the vector is corrupted and isn't valid for further process
         """
-
-        print(input_vector)
         if input_vector == "": 
             # TO-DO: return a dictionary, which assinges each vector a dictionary the second dictionary contains the metrices. if
             return True
@@ -390,20 +384,17 @@ class Vulnerability:
         return self._tv[name] 
 
     def get_vector(self): 
-        vector = f"AV:{self._tv['AV']}"
+        vector = "CVSS:3.1"
         for key in self._tv: 
             vector += f"/{key}:{self._tv[key]}"
         return vector
 
-    def set_name(self, name):
+    def set_name(self, name): 
         self._name = name
 
-    def get_name(self): 
+    def get_name(self):
         return self._name
-
-    def get_total(self): 
-        pass
-
+        
     def get_base_score(self): 
         return self._base_score
 
@@ -412,7 +403,6 @@ class Vulnerability:
 
     def get_env_score(self): 
         return self._env_score
-
 
 if __name__ == "__main__":
     c1 = Controller() 
