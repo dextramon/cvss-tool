@@ -6,4 +6,4 @@ from controller import Controller
 if __name__ == "__main__":
     c1 = Controller() 
 
-    c1.main_loop()
+    c1.gui_loop()

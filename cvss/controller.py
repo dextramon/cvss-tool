@@ -2,15 +2,25 @@
 import json 
 from vulnerability import Vulnerability
 from view import View
+from tkinter import *
+from tkinter import ttk
+from graphical import CreationView
 
 #JSON Integration
-with open('../templates/data.json') as f:
+with open('templates/data.json') as f:
     data = json.load(f)
 
 class Controller: 
     def __init__(self): 
         self._view = View() 
         self._model = Vulnerability()
+
+    def gui_loop(self): 
+        root = Tk()
+        root.geometry("300x300") 
+        creation_view = CreationView(root, self)
+        root.mainloop()
+
 
     def main_loop(self): 
         self._model.set_name(self._view.get_name())
@@ -105,9 +115,10 @@ class Controller:
             out2.write(json.dumps(JSON_OUT, indent=4))
 
     def print_txt(self): 
-        with open('../templates/template_output_txt.txt' , 'r') as file:
+        with open('templates/template_output_txt.txt' , 'r') as file:
             TXT_OUT = file.read()
-            TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_name())
+            TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_asset())
+            TXT_OUT = TXT_OUT.replace('$vul_name$', self._model.get_name())
             TXT_OUT = TXT_OUT.replace('$vektor$', str(self._model.get_vector()))
             TXT_OUT = TXT_OUT.replace('$base_score$', str(self._model.get_base_score()))
             TXT_OUT = TXT_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
@@ -120,3 +131,41 @@ class Controller:
 
     def _set_name(self):
         print(self._view.get_name())
+
+    def get_vector(self): 
+        return self._model.get_vector()
+
+    def set_metric(self, base_string, value=None):
+        if value == None:
+            self._model.set_vector(base_string)
+        else: 
+            self._model.set_metric(base_string, value)
+
+    def print_hello(self): 
+        print("Hello Wold!")
+
+    def get_metric(self, type): 
+        if type == "BASE": 
+            return self._model.get_base_vector()
+        elif type=="TEMP": 
+            return self._model.get_temp_vector()
+        elif type=="ENV": 
+            return self._model.get_env_vector()
+        else: 
+            pass
+
+    def get_base_score(self): 
+        return self._model.get_base_score()
+
+    def get_env_score(self): 
+        return self._model.get_env_score()
+
+    def get_temp_score(self): 
+        return self._model.get_temp_score()
+
+    def set_vul(self, value): 
+        self._model.set_name(value)
+    
+    def set_asset(self, value):
+        self._model.set_asset(value)
+    

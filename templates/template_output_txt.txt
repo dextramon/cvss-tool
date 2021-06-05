@@ -1,4 +1,4 @@
-Für das Asset $asset_name$ wurde ein Base Score von $base_score$ errechnet. 
+Für das "$asset_name$" wurde fuer die Schwachstelle "$vul_name$" ein Base Score von $base_score$ errechnet. 
 
 Base Score: $base_score$
 Temporal Score: $temp_score$
