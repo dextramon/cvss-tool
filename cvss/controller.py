@@ -173,14 +173,16 @@ class Controller:
                 output.write(TXT_OUT)
 
     def print_pdf(self):
-        with open('../templates/template_output_tex.tex' , 'r') as file:
+        with open('templates/template_output_tex.tex' , 'r') as file:
             PDF_OUT = file.read()
             PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_name())
             PDF_OUT = PDF_OUT.replace('$vul_name$', self._model.get_name())
             PDF_OUT = PDF_OUT.replace('$base_score$', str(self._model.get_base_score()))
             PDF_OUT = PDF_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
             PDF_OUT = PDF_OUT.replace('$env_score$', str(self._model.get_env_score()))
-            PDF_OUT = PDF_OUT.replace('$vektor$', str(self._model.get_vector()))
+            vektor = str(self._model.get_vector())
+            PDF_OUT = PDF_OUT.replace('$vektor1$', vektor[:69])
+            PDF_OUT = PDF_OUT.replace('$vektor2$', vektor[69:])
 
 
             create_name = self._model.get_name() + '_output.tex'
