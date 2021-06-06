@@ -60,7 +60,7 @@ class View:
 
     def create_user(self):
         user_input = []
-        print('Bitte erstellen Sie einen Account')
+        print('Create a new user')
 
         print('username:')
         user_input.append(input())

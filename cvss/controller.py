@@ -80,7 +80,6 @@ class Controller:
                     print('Login failed')
                     self.start()
         else:
-            pass
             user_input = self._view.create_user()
             hash_object = hashlib.sha256(user_input[1].encode('ascii'))
             hash_password = str(hash_object.hexdigest())
@@ -93,6 +92,10 @@ class Controller:
 
             with open('templates/auth.json', 'w') as auth:
                 json.dump(credentials, auth)
+            
+            print('Account is created')
+            self.main_loop()
+
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
