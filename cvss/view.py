@@ -48,3 +48,23 @@ class View:
         answer = input()
         return answer
     
+    def get_credentials(self):
+        user_input = []
+
+        print('username:')
+        user_input.append(input())
+        print('password:')
+        user_input.append(input())
+
+        return user_input
+
+    def create_user(self):
+        user_input = []
+        print('Bitte erstellen Sie einen Account')
+
+        print('username:')
+        user_input.append(input())
+        print('password:')
+        user_input.append(input())
+
+        return user_input
