@@ -1,4 +1,3 @@
-
 import os
 import platform
 import subprocess
@@ -9,6 +8,7 @@ from view import View
 from tkinter import *
 from tkinter import ttk
 from graphical import CreationView
+from graphical import GetCredentials
 
 #JSON Integration
 with open('templates/data.json') as f:
@@ -18,16 +18,20 @@ class Controller:
     def __init__(self): 
         self._view = View() 
         self._model = Vulnerability()
+        self.username = ""
+        self.password = ""
 
     def gui_loop(self): 
         root = Tk()
         root.geometry("300x300") 
-        creation_view = CreationView(root, self)
+        get_credentials(root, self)
+        #creation_view = CreationView(root, self)
         root.mainloop()
-
+        print(self.username)
 
     def start(self):
-        self.check_auth()
+        #self.check_auth_terminal()
+        self.check_auth_gui()
 
     def main_loop(self): 
         self._model.set_asset(self._view.get_asset_name())
@@ -62,7 +66,7 @@ class Controller:
             get_input = self._view.get_option(values)
         
 
-    def check_auth(self):
+    def check_auth_terminal(self):
     
         if os.path.isfile('templates/auth.json'):
             user_input = self._view.get_credentials()
@@ -97,6 +101,45 @@ class Controller:
             print('Account is created')
             self.main_loop()
 
+    def check_auth_gui(self):
+    
+        root = Tk()
+        root.geometry("300x300") 
+    
+        if os.path.isfile('templates/auth.json'):
+            tet = GetCredentials(root, self)
+            root.mainloop()
+            root.destroy()
+            hash_object = hashlib.sha256(self.password.encode('ascii'))
+            hash_password = str(hash_object.hexdigest())
+
+
+            with open('templates/auth.json') as auth:
+                credentials = json.load(auth)
+
+                if self.username == credentials['user'] and hash_password == credentials['password']:
+                    CreationView(root, self)
+                    root.mainloop()
+                
+                else:
+                    GetCredentials(root, self)
+                    root.mainloop()
+        else:
+            user_input = self._view.create_user()
+            hash_object = hashlib.sha256(self.password.encode('ascii'))
+            hash_password = str(hash_object.hexdigest())
+
+            credentials = {
+                'user': self.username,
+                'password': hash_password
+
+            }
+
+            with open('templates/auth.json', 'w') as auth:
+                json.dump(credentials, auth)
+            
+            #start graphical
+             
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -242,3 +285,8 @@ class Controller:
     def set_asset(self, value):
         self._model.set_asset(value)
     
+    def set_user(self, value):
+        self.username = value
+    
+    def set_password(self, value):
+        self.password = value

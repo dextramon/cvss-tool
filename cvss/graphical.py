@@ -527,7 +527,8 @@ class Controller:
     def __init__(self): 
         root = Tk() 
         root.geometry("400x400")
-        mv = CreationView(root, self)
+        mv = auth(root, self)
+        # mv = CreationView(root, self)
         root.mainloop()
 
 class BaseView(tk.Toplevel): 
@@ -726,6 +727,69 @@ class MetricOptions:
             self.option = ttk.Radiobutton(self.mainframe, text=dict[values]["options"][i]["name"], variable=valueholder, value=i)
             self.option.grid()
         self.mainframe.grid()
+
+
+
+class GetCredentials: 
+    def __init__(self, parent, controller): 
+        self.frame = ttk.Frame(parent)
+
+        self.controller = controller
+
+        self.user_str = StringVar()
+        user_name = ttk.Label(self.frame, text="Username ")
+        user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
+
+        self.password_str = StringVar() 
+        password_name = ttk.Label(self.frame, text="Password ")
+        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+
+        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=ACTIVE)
+
+        user_name.grid(column=0,row=2, columnspan=2)
+        user_entry.grid(column=0,row=3, columnspan=2)
+        password_name.grid(column=0,row=0, columnspan=2) 
+        password_entry.grid(column=0,row=1, columnspan=2)
+        self.button.grid(column=0, row=10, columnspan=2)
+
+        self.frame.grid() 
+
+    def submit_form(self): 
+        self.controller.set_user(self.user_str.get())
+        self.controller.set_password(self.password_str.get())
+        
+class create_user: 
+    def __init__(self, parent, controller): 
+        self.frame = ttk.Frame(parent)
+
+        self.controller = controller
+
+        self.user_str = StringVar()
+        user_name = ttk.Label(self.frame, text="Username ")
+        user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
+
+        self.password_str = StringVar() 
+        password_name = ttk.Label(self.frame, text="Password ")
+        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+
+        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=DISABLED)
+
+        user_name.grid(column=0,row=2, columnspan=2)
+        user_entry.grid(column=0,row=3, columnspan=2)
+        password_name.grid(column=0,row=0, columnspan=2) 
+        password_entry.grid(column=0,row=1, columnspan=2)
+        self.button.grid(column=0, row=10, columnspan=2)
+
+        self.frame.grid() 
+
+    def submit_form(self): 
+        self.controller.set_vul(self.vul_str.get())
+        self.controller.set_asset(self.asset_str.get())
+        self.controller.print_txt()
+
+    def check_status(self): 
+        if self.base_score_button_var.get() != "Not set yet!": 
+            self.button.configure(state=NORMAL)
 
 if __name__ == "__main__": 
 
