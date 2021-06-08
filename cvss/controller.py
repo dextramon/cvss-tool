@@ -146,7 +146,8 @@ class Controller:
         with open('../templates/template_output_json.json') as out:
             JSON_OUT = json.load(out)
         
-        JSON_OUT['asset_name'] = self._model.get_name()
+        JSON_OUT['asset_name'] = self._model.get_asset()
+        JSON_OUT['vuln_name'] = self._model.get_name()
         JSON_OUT['vektor'] = self._model.get_vector()
         JSON_OUT['base_score'] = self._model.get_base_score()
         JSON_OUT['temp_score'] = self._model.get_temp_score()
@@ -175,7 +176,7 @@ class Controller:
     def print_pdf(self):
         with open('templates/template_output_tex.tex' , 'r') as file:
             PDF_OUT = file.read()
-            PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_name())
+            PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_asset())
             PDF_OUT = PDF_OUT.replace('$vul_name$', self._model.get_name())
             PDF_OUT = PDF_OUT.replace('$base_score$', str(self._model.get_base_score()))
             PDF_OUT = PDF_OUT.replace('$temp_score$', str(self._model.get_temp_score()))

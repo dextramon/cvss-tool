@@ -50,21 +50,15 @@ class View:
     
     def get_credentials(self):
         user_input = []
-
-        print('username:')
-        user_input.append(input())
-        print('password:')
-        user_input.append(input())
+        user_input.append(input("username: "))
+        user_input.append(input("password: "))
 
         return user_input
 
     def create_user(self):
         user_input = []
         print('Create a new user')
-
-        print('username:')
-        user_input.append(input())
-        print('password:')
-        user_input.append(input())
+        user_input.append(input("username: "))
+        user_input.append(input("password: "))
 
         return user_input
