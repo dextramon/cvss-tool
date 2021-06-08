@@ -3,9 +3,14 @@ class View:
     def __init__(self):
         pass
 
-    def get_name(self): 
+    def get_asset_name(self): 
         asset_name = input("Geben Sie den Namen des Assets ein: ")
         return asset_name
+
+
+    def get_vuln_name(self):
+        vuln_name = input("Geben Sie den Namen der Vulnerability ein: ")
+        return vuln_name
 
     def set_base_metrics(self, metrics):
         answer = []

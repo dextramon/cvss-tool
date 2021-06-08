@@ -30,7 +30,8 @@ class Controller:
         self.check_auth()
 
     def main_loop(self): 
-        self._model.set_name(self._view.get_name())
+        self._model.set_asset(self._view.get_asset_name())
+        self._model.set_name(self._view.get_vuln_name())
         print("BASE SCORE:")
         vector_string = self._calculate_base_score()
         print("TEMPORAL SCORE:")
