@@ -1,5 +1,9 @@
 
+import os
+import platform
+import subprocess
 import json 
+import hashlib
 from vulnerability import Vulnerability
 from view import View
 from tkinter import *
@@ -22,6 +26,9 @@ class Controller:
         root.mainloop()
 
 
+    def start(self):
+        self.check_auth()
+
     def main_loop(self): 
         self._model.set_name(self._view.get_name())
         print("BASE SCORE:")
@@ -40,8 +47,8 @@ class Controller:
         get_input = self._view.get_option(values)
         while get_input != "4": 
             if(get_input == "1" and "1" in values): 
-                #print("PDF goes brrrrrrrr")
                 del values["1"]
+                self.print_pdf()
             elif(get_input == "2" and "2" in values): 
                 del values["2"]
                 self.print_txt()
@@ -53,6 +60,42 @@ class Controller:
 
             get_input = self._view.get_option(values)
         
+
+    def check_auth(self):
+    
+        if os.path.isfile('templates/auth.json'):
+            user_input = self._view.get_credentials()
+            hash_object = hashlib.sha256(user_input[1].encode('ascii'))
+            hash_password = str(hash_object.hexdigest())
+
+
+            with open('templates/auth.json') as auth:
+                credentials = json.load(auth)
+
+                if user_input[0] == credentials['user'] and hash_password == credentials['password']:
+                    print('Login successful')
+                    self.main_loop()
+
+                else:
+                    print('Login failed')
+                    self.start()
+        else:
+            user_input = self._view.create_user()
+            hash_object = hashlib.sha256(user_input[1].encode('ascii'))
+            hash_password = str(hash_object.hexdigest())
+
+            credentials = {
+                'user': user_input[0],
+                'password': hash_password
+
+            }
+
+            with open('templates/auth.json', 'w') as auth:
+                json.dump(credentials, auth)
+            
+            print('Account is created')
+            self.main_loop()
+
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -103,7 +146,8 @@ class Controller:
         with open('../templates/template_output_json.json') as out:
             JSON_OUT = json.load(out)
         
-        JSON_OUT['asset_name'] = self._model.get_name()
+        JSON_OUT['asset_name'] = self._model.get_asset()
+        JSON_OUT['vuln_name'] = self._model.get_name()
         JSON_OUT['vektor'] = self._model.get_vector()
         JSON_OUT['base_score'] = self._model.get_base_score()
         JSON_OUT['temp_score'] = self._model.get_temp_score()
@@ -128,6 +172,34 @@ class Controller:
 
             with open(create_name , 'w') as output:
                 output.write(TXT_OUT)
+
+    def print_pdf(self):
+        with open('templates/template_output_tex.tex' , 'r') as file:
+            PDF_OUT = file.read()
+            PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_asset())
+            PDF_OUT = PDF_OUT.replace('$vul_name$', self._model.get_name())
+            PDF_OUT = PDF_OUT.replace('$base_score$', str(self._model.get_base_score()))
+            PDF_OUT = PDF_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
+            PDF_OUT = PDF_OUT.replace('$env_score$', str(self._model.get_env_score()))
+            vektor = str(self._model.get_vector())
+            PDF_OUT = PDF_OUT.replace('$vektor1$', vektor[:69])
+            PDF_OUT = PDF_OUT.replace('$vektor2$', vektor[69:])
+
+
+            create_name = self._model.get_name() + '_output.tex'
+
+            with open(create_name , 'w') as output:
+                output.write(PDF_OUT)
+
+        x = subprocess.call('pdflatex ' + create_name)
+
+        extensions = ['.aux','.bcf','.lof','.log','.lot','.out','.run.xml','.toc' ,'.tex']
+        os1 = {'Linux' : 'rm', 'Darwin': 'rm', 'Windows': 'del'}
+        opertor = os1[platform.system()]
+        for i in range(len(extensions)):
+            os.system(opertor + ' ' + self._model.get_name()+ '_output' + extensions[i])
+
+
 
     def _set_name(self):
         print(self._view.get_name())
