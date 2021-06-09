@@ -534,7 +534,6 @@ class BaseView(tk.Toplevel):
     def __init__(self, parent, value, brother):
         super().__init__(parent)
 
-        self.geometry("300x300")
         self.mainframe = ttk.Frame(self)
         self._tv = {"AV": StringVar(), "AC": StringVar(), "PR": StringVar(), "UI": StringVar(), "S": StringVar(), "C": StringVar(), "I": StringVar(), "A":StringVar()}
         base_dict = return_dict()
@@ -554,9 +553,12 @@ class BaseView(tk.Toplevel):
 
     def print_text(self):
         output_string = f'AV:{self._tv["AV"].get()}/AC:{self._tv["AC"].get()}/PR:{self._tv["PR"].get()}/UI:{self._tv["UI"].get()}/S:{self._tv["S"].get()}/C:{self._tv["C"].get()}/I:{self._tv["I"].get()}/A:{self._tv["A"].get()}'
+        print(output_string)
         self.brother.controller.set_metric(output_string)
         self.value.set(self.brother.controller.get_metric(type="BASE"))
         self.brother.base_score_var.set(self.brother.controller.get_base_score())
+        self.brother.temp_score_var.set(self.brother.controller.get_temp_score())#
+        self.brother.env_score_var.set(self.brother.controller.get_env_score())
         self.brother.controller.print_hello()
         self.brother.check_status()
 
@@ -570,7 +572,6 @@ class BaseView(tk.Toplevel):
 class TempView(tk.Toplevel): 
     def __init__(self, parent, value, brother):
         super().__init__(parent)
-        self.geometry("300x300")
         self.mainframe = ttk.Frame(self)
         self.value_hold = {"E": StringVar(), "RL": StringVar(), "RC": StringVar()}
         temp_dict = return_temp()
@@ -604,7 +605,6 @@ class TempView(tk.Toplevel):
 class EnvView(tk.Toplevel): 
     def __init__(self, parent, value, brother):
         super().__init__(parent)
-        self.geometry("300x300")
         self.mainframe = ttk.Frame(self)
         self.value_hold = {"CR": StringVar(), "IR": StringVar(), "AR": StringVar(), "MAV": StringVar(), "MAC": StringVar(), "MPR": StringVar(), "MUI": StringVar(), "MS": StringVar(), "MC": StringVar(), "MI": StringVar(), "MA":StringVar()}
         env_dict = return_env()
@@ -649,7 +649,8 @@ class CreationView:
         asset_name = ttk.Label(self.frame, text="Asste Name: ")
         asset_entry = ttk.Entry(self.frame, textvariable=self.asset_str)
 
-        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=DISABLED)
+        self.txtbutton = ttk.Button(self.frame, text="Print .TXT", command=self.submit_txt, state=DISABLED)
+        self.jsonbutton = ttk.Button(self.frame, text="Print .JSON", command=self.submit_json, state=DISABLED)
 
         base_score = ttk.Label(self.frame, text="Base Score: ")
         self.base_score_var = DoubleVar()
@@ -690,14 +691,20 @@ class CreationView:
         env_score_value.grid(column=1, row=8)
         env_score_button.grid(column=0, row=9, columnspan=2)
 
-        self.button.grid(column=0, row=10, columnspan=2)
+        self.txtbutton.grid(column=0, row=10)
+        self.jsonbutton.grid(column=1, row=10)
 
         self.frame.grid() 
 
-    def submit_form(self): 
+    def submit_txt(self): 
         self.controller.set_vul(self.vul_str.get())
         self.controller.set_asset(self.asset_str.get())
         self.controller.print_txt()
+
+    def submit_json(self): 
+        self.controller.set_vul(self.vul_str.get())
+        self.controller.set_asset(self.asset_str.get())
+        self.controller.print_json()
 
     def base_top_level(self): 
         t1 = BaseView(self.frame, self.base_score_button_var, self)
@@ -710,7 +717,8 @@ class CreationView:
 
     def check_status(self): 
         if self.base_score_button_var.get() != "Not set yet!": 
-            self.button.configure(state=NORMAL)
+            self.txtbutton.configure(state=NORMAL)
+            self.jsonbutton.configure(state=NORMAL)
 
 
 class MetricOptions: 
@@ -722,10 +730,71 @@ class MetricOptions:
         else: 
             valueholder.set("X")
 
-        for i in dict[values]["options"]:
+        for h,i in enumerate(dict[values]["options"]):
             self.option = ttk.Radiobutton(self.mainframe, text=dict[values]["options"][i]["name"], variable=valueholder, value=i)
-            self.option.grid()
+            self.option.grid(column=h, row=0)
         self.mainframe.grid()
+
+class GetCredentials: 
+    def __init__(self, parent, controller): 
+        self.frame = ttk.Frame(parent)
+
+        self.controller = controller
+
+        self.user_str = StringVar()
+        user_name = ttk.Label(self.frame, text="Username ")
+        user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
+
+        self.password_str = StringVar() 
+        password_name = ttk.Label(self.frame, text="Password ")
+        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+
+        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=ACTIVE)
+
+        user_name.grid(column=0,row=2, columnspan=2)
+        user_entry.grid(column=0,row=3, columnspan=2)
+        password_name.grid(column=0,row=0, columnspan=2) 
+        password_entry.grid(column=0,row=1, columnspan=2)
+        self.button.grid(column=0, row=10, columnspan=2)
+
+        self.frame.grid() 
+
+    def submit_form(self): 
+        self.controller.set_user(self.user_str.get())
+        self.controller.set_password(self.password_str.get())
+        
+class create_user: 
+    def __init__(self, parent, controller): 
+        self.frame = ttk.Frame(parent)
+
+        self.controller = controller
+
+        self.user_str = StringVar()
+        user_name = ttk.Label(self.frame, text="Username ")
+        user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
+
+        self.password_str = StringVar() 
+        password_name = ttk.Label(self.frame, text="Password ")
+        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+
+        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=DISABLED)
+
+        user_name.grid(column=0,row=2, columnspan=2)
+        user_entry.grid(column=0,row=3, columnspan=2)
+        password_name.grid(column=0,row=0, columnspan=2) 
+        password_entry.grid(column=0,row=1, columnspan=2)
+        self.button.grid(column=0, row=10, columnspan=2)
+
+        self.frame.grid() 
+
+    def submit_form(self): 
+        self.controller.set_vul(self.vul_str.get())
+        self.controller.set_asset(self.asset_str.get())
+        self.controller.print_txt()
+
+    def check_status(self): 
+        if self.base_score_button_var.get() != "Not set yet!": 
+            self.button.configure(state=NORMAL)
 
 if __name__ == "__main__": 
 
