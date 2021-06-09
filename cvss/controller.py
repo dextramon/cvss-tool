@@ -128,8 +128,8 @@ class Controller:
         get_input = self._view.get_option(values)
         while get_input != "4": 
             if(get_input == "1" and "1" in values): 
-                #print("PDF goes brrrrrrrr")
                 del values["1"]
+                self.print_pdf()
             elif(get_input == "2" and "2" in values): 
                 del values["2"]
                 self.print_txt()
@@ -188,7 +188,7 @@ class Controller:
             [EXPLOIT_CODE_MATURITY, REMIDATION_LEVEL, REPORT_CONFIDENCE])
 
     def print_json(self): 
-        with open('../templates/template_output_json.json') as out:
+        with open('templates/template_output_json.json') as out:
             JSON_OUT = json.load(out)
         
         JSON_OUT['asset_name'] = self._model.get_asset()
