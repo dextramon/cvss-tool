@@ -24,14 +24,14 @@ class Controller:
     def gui_loop(self): 
         root = Tk()
         root.geometry("300x300") 
-        get_credentials(root, self)
-        #creation_view = CreationView(root, self)
+        #get_credentials(root, self)
+        creation_view = CreationView(root, self)
         root.mainloop()
-        print(self.username)
+        #print(self.username)
 
     def start(self):
-        #self.check_auth_terminal()
-        self.check_auth_gui()
+        self.check_auth_terminal()
+        #self.check_auth_gui()
 
     def main_loop(self): 
         self._model.set_asset(self._view.get_asset_name())
