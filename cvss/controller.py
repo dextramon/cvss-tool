@@ -9,6 +9,7 @@ from view import View
 from tkinter import *
 from tkinter import ttk
 from graphical import CreationView
+from graphical import GetCredentials
 
 #JSON Integration
 with open('templates/data.json') as f:
@@ -18,50 +19,21 @@ class Controller:
     def __init__(self): 
         self._view = View() 
         self._model = Vulnerability()
+        self.username = ""
+        self.password = ""
 
     def gui_loop(self): 
         root = Tk()
-        root.geometry("300x300") 
+        #get_credentials(root, self)
         creation_view = CreationView(root, self)
         root.mainloop()
-
+        #print(self.username)
 
     def start(self):
-        self.check_auth()
-
-    def main_loop(self): 
-        self._model.set_name(self._view.get_name())
-        print("BASE SCORE:")
-        vector_string = self._calculate_base_score()
-        print("TEMPORAL SCORE:")
-        vector_string += self._calculate_temp_score()
-        print("ENVIRONMENTAL SCORE")
-        vector_string += self._calculate_env_score()
-        self._model.set_vector(vector_string)
-        print(f"Asset Name: {self._model.get_name()}")
-        print(f"Base Score: {self._model.get_base_score()}")
-        print(f"Temporal Score: {self._model.get_temp_score()}")
-        print(f"Environmental Score: {self._model.get_env_score()}")
-        print(f"CVSS3.1 Vektor: {self._model.get_vector()}")
-        values =  {"1": "Create PDF", "2": "Create TXT", "3": "Create JSON", "4": "Exit"}
-        get_input = self._view.get_option(values)
-        while get_input != "4": 
-            if(get_input == "1" and "1" in values): 
-                del values["1"]
-                self.print_pdf()
-            elif(get_input == "2" and "2" in values): 
-                del values["2"]
-                self.print_txt()
-            elif(get_input == "3" and "3" in values): 
-                del values["3"]
-                self.print_json()
-            else:
-                pass
-
-            get_input = self._view.get_option(values)
-        
-
-    def check_auth(self):
+        self.check_auth_terminal()
+        #self.check_auth_gui()
+    
+    def check_auth_terminal(self):
     
         if os.path.isfile('templates/auth.json'):
             user_input = self._view.get_credentials()
@@ -96,6 +68,79 @@ class Controller:
             print('Account is created')
             self.main_loop()
 
+    def check_auth_gui(self):
+    
+        root = Tk()
+        root.geometry("300x300") 
+    
+        if os.path.isfile('templates/auth.json'):
+            tet = GetCredentials(root, self)
+            root.mainloop()
+            root.destroy()
+            hash_object = hashlib.sha256(self.password.encode('ascii'))
+            hash_password = str(hash_object.hexdigest())
+
+
+            with open('templates/auth.json') as auth:
+                credentials = json.load(auth)
+
+                if self.username == credentials['user'] and hash_password == credentials['password']:
+                    CreationView(root, self)
+                    root.mainloop()
+                
+                else:
+                    GetCredentials(root, self)
+                    root.mainloop()
+        else:
+            user_input = self._view.create_user()
+            hash_object = hashlib.sha256(self.password.encode('ascii'))
+            hash_password = str(hash_object.hexdigest())
+
+            credentials = {
+                'user': self.username,
+                'password': hash_password
+
+            }
+
+            with open('templates/auth.json', 'w') as auth:
+                json.dump(credentials, auth)
+            
+            #start graphical
+
+    def main_loop(self): 
+        self._model.set_asset(self._view.get_asset_name())
+        self._model.set_name(self._view.get_vuln_name())
+        print("BASE SCORE:")
+        vector_string = self._calculate_base_score()
+        print("TEMPORAL SCORE:")
+        vector_string += self._calculate_temp_score()
+        print("ENVIRONMENTAL SCORE")
+        vector_string += self._calculate_env_score()
+        self._model.set_vector(vector_string)
+        print(f"Vulnerability Name: {self._model.get_name()}")
+        print(f"Asset Name: {self._model.get_asset()}")
+        print(f"Base Score: {self._model.get_base_score()}")
+        print(f"Temporal Score: {self._model.get_temp_score()}")
+        print(f"Environmental Score: {self._model.get_env_score()}")
+        print(f"Total Score: {self._model.get_total_score()}")
+        print(f"CVSS3.1 Vektor: {self._model.get_vector()}")
+        values =  {"1": "Create PDF", "2": "Create TXT", "3": "Create JSON", "4": "Exit"}
+        get_input = self._view.get_option(values)
+        while get_input != "4": 
+            if(get_input == "1" and "1" in values): 
+                #print("PDF goes brrrrrrrr")
+                del values["1"]
+            elif(get_input == "2" and "2" in values): 
+                del values["2"]
+                self.print_txt()
+            elif(get_input == "3" and "3" in values): 
+                del values["3"]
+                self.print_json()
+            else:
+                pass
+
+            get_input = self._view.get_option(values)
+        
 
     def _calculate_base_score(self):
         ATTACK_VECTOR = data['base_metric']['ATTACK_VECTOR']
@@ -199,8 +244,6 @@ class Controller:
         for i in range(len(extensions)):
             os.system(opertor + ' ' + self._model.get_name()+ '_output' + extensions[i])
 
-
-
     def _set_name(self):
         print(self._view.get_name())
 
@@ -241,3 +284,8 @@ class Controller:
     def set_asset(self, value):
         self._model.set_asset(value)
     
+    def set_user(self, value):
+        self.username = value
+    
+    def set_password(self, value):
+        self.password = value
