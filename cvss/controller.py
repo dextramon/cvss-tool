@@ -10,6 +10,7 @@ from tkinter import *
 from tkinter import ttk
 from graphical import CreationView
 from graphical import GetCredentials
+from graphical import CreateUser
 
 #JSON Integration
 with open('templates/data.json') as f:
@@ -30,8 +31,8 @@ class Controller:
         #print(self.username)
 
     def start(self):
-        self.check_auth_terminal()
-        #self.check_auth_gui()
+        #self.check_auth_terminal()
+        self.check_auth_gui()
     
     def check_auth_terminal(self):
     
@@ -70,13 +71,13 @@ class Controller:
 
     def check_auth_gui(self):
     
-        root = Tk()
-        root.geometry("300x300") 
-    
         if os.path.isfile('templates/auth.json'):
-            tet = GetCredentials(root, self)
-            root.mainloop()
-            root.destroy()
+
+            GetCredentials(self)
+            
+            if self.username == "" and self.password == "":
+                exit(1)
+
             hash_object = hashlib.sha256(self.password.encode('ascii'))
             hash_password = str(hash_object.hexdigest())
 
@@ -85,14 +86,18 @@ class Controller:
                 credentials = json.load(auth)
 
                 if self.username == credentials['user'] and hash_password == credentials['password']:
-                    CreationView(root, self)
-                    root.mainloop()
-                
+                    self.username = ""
+                    self.password = ""
+                    self.gui_loop()
+
                 else:
-                    GetCredentials(root, self)
-                    root.mainloop()
+                    self.username = ""
+                    self.password = ""
+                    self.start()
         else:
-            user_input = self._view.create_user()
+
+            CreateUser(self)
+
             hash_object = hashlib.sha256(self.password.encode('ascii'))
             hash_password = str(hash_object.hexdigest())
 
@@ -105,7 +110,11 @@ class Controller:
             with open('templates/auth.json', 'w') as auth:
                 json.dump(credentials, auth)
             
-            #start graphical
+            self.username = ""
+            self.password = ""
+            
+            self.gui_loop()
+
 
     def main_loop(self): 
         self._model.set_asset(self._view.get_asset_name())
@@ -287,5 +296,12 @@ class Controller:
     def set_user(self, value):
         self.username = value
     
+    def get_user(self):
+        return self.username
+    
     def set_password(self, value):
         self.password = value
+    
+    def get_password(self):
+        return self.password
+
