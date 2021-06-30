@@ -31,7 +31,6 @@ class Controller:
         #print(self.username)
 
     def start(self):
-        #self.check_auth_terminal()
         self.check_auth_gui()
     
     def check_auth_terminal(self):
