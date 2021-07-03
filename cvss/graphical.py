@@ -738,25 +738,37 @@ class MetricOptions:
 class GetCredentials: 
     def __init__(self, controller): 
         self.root = Tk()
-        self.root.geometry('300x300')
+        self.root.title('cvss-tool')
+        self.root.geometry('275x125')
+        self.root.minsize(275, 125)
+        self.root.maxsize(275, 125)
         self.frame = ttk.Frame(self.root)
         self.controller = controller
 
-        self.password_str = StringVar() 
-        password_name = ttk.Label(self.frame, text="Password ")
-        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+        self.msg = StringVar()
+        msg = ttk.Label(self.frame, text="Please enter your credentials")
 
         self.user_str = StringVar()
         user_name = ttk.Label(self.frame, text="Username ")
         user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
 
+        self.password_str = StringVar() 
+        password_name = ttk.Label(self.frame, text="Password ")
+        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+
         self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=ACTIVE)
 
-        user_name.grid(column=0,row=0, columnspan=2)
-        user_entry.grid(column=0,row=1, columnspan=2)
-        password_name.grid(column=0,row=2, columnspan=2) 
-        password_entry.grid(column=0,row=3, columnspan=2)
-        self.button.grid(column=0, row=10, columnspan=2)
+        l0 = tk.Label(self.frame, text='     \n   ')
+        l1 = tk.Label(self.frame, text='     \n   ')
+        l0.grid(column=0, row=0)
+        l1.grid(column=0, row=9)
+
+        msg.grid(column=3,row=0, columnspan=2)
+        user_name.grid(column=1,row=1, columnspan=2)
+        user_entry.grid(column=3,row=1, columnspan=2)
+        password_name.grid(column=1,row=3, columnspan=2) 
+        password_entry.grid(column=3,row=3, columnspan=2)
+        self.button.grid(column=3, row=9, columnspan=2)
 
         self.frame.grid() 
 
@@ -770,9 +782,15 @@ class GetCredentials:
 class CreateUser: 
     def __init__(self, controller): 
         self.root = Tk()
-        self.root.geometry('300x300')
+        self.root.title('cvss-tool')
+        self.root.geometry('275x125')
+        self.root.minsize(275, 125)
+        self.root.maxsize(275, 125)
         self.frame = ttk.Frame(self.root)
         self.controller = controller
+
+        self.msg = StringVar()
+        msg = ttk.Label(self.frame, text="Please create your account")
 
         self.user_str = StringVar()
         user_name = ttk.Label(self.frame, text="Username ")
@@ -784,11 +802,17 @@ class CreateUser:
 
         self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=ACTIVE)
 
-        user_name.grid(column=0,row=2, columnspan=2)
-        user_entry.grid(column=0,row=3, columnspan=2)
-        password_name.grid(column=0,row=0, columnspan=2) 
-        password_entry.grid(column=0,row=1, columnspan=2)
-        self.button.grid(column=0, row=10, columnspan=2)
+        l0 = tk.Label(self.frame, text='     \n   ')
+        l1 = tk.Label(self.frame, text='     \n   ')
+        l0.grid(column=0, row=0)
+        l1.grid(column=0, row=9)
+
+        msg.grid(column=3,row=0, columnspan=2)
+        user_name.grid(column=1,row=1, columnspan=2)
+        user_entry.grid(column=3,row=1, columnspan=2)
+        password_name.grid(column=1,row=3, columnspan=2) 
+        password_entry.grid(column=3,row=3, columnspan=2)
+        self.button.grid(column=3, row=9, columnspan=2)
 
         self.frame.grid() 
 
