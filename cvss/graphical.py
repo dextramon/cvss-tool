@@ -736,7 +736,7 @@ class MetricOptions:
         self.mainframe.grid()
 
 class GetCredentials: 
-    def __init__(self, controller): 
+    def __init__(self, controller, msg): 
         self.root = Tk()
         self.root.title('cvss-tool')
         self.root.geometry('275x125')
@@ -746,7 +746,7 @@ class GetCredentials:
         self.controller = controller
 
         self.msg = StringVar()
-        msg = ttk.Label(self.frame, text="Please enter your credentials")
+        msg = ttk.Label(self.frame, text=msg)
 
         self.user_str = StringVar()
         user_name = ttk.Label(self.frame, text="Username ")
