@@ -567,7 +567,6 @@ class BaseView(tk.Toplevel):
             metric_label.grid()
             MetricOptions(parent=self.mainframe, valueholder=self._tv[i], values=i, dict=return_dict())
 
-
 class TempView(tk.Toplevel): 
     def __init__(self, parent, value, brother):
         super().__init__(parent)
