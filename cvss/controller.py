@@ -20,6 +20,8 @@ class Controller:
         self._model = Vulnerability()
         self.username = ""
         self.password = ""
+        self.msg = ""
+
 
     def gui_loop(self): 
         root = Tk()
@@ -29,7 +31,8 @@ class Controller:
         #print(self.username)
 
     def start(self):
-        self.check_auth_gui("Please enter your credentials")
+        self.msg = "Please enter your credentials"
+        self.check_auth_gui()
     
     def check_auth_terminal(self):
     
@@ -66,11 +69,11 @@ class Controller:
             print('Account is created')
             self.main_loop()
 
-    def check_auth_gui(self,msg):
+    def check_auth_gui(self):
     
         if os.path.isfile('../templates/auth.json'):
 
-            GetCredentials(self, msg)
+            GetCredentials(self, self.msg)
             
             if self.username == "" and self.password == "":
                 exit(1)
@@ -90,7 +93,8 @@ class Controller:
                 else:
                     self.username = ""
                     self.password = ""
-                    self.check_auth_gui("wrong username or password")
+                    self.msg = "wrong username or password"
+                    self.check_auth_gui()
         else:
 
             CreateUser(self)
