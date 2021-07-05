@@ -39,25 +39,29 @@ class Controller:
             GetCredentials(self, self.msg)
             
             if self.username == "" and self.password == "":
-                exit(1)
+                 return False
+            else:
+                hash_object = hashlib.sha256(self.password.encode('ascii'))
+                hash_password = str(hash_object.hexdigest())
 
-            hash_object = hashlib.sha256(self.password.encode('ascii'))
-            hash_password = str(hash_object.hexdigest())
 
 
-            with open('../templates/auth.json') as auth:
-                credentials = json.load(auth)
+                with open('templates/auth.json') as auth:
+                   credentials = json.load(auth)
+
 
                 if self.username == credentials['user'] and hash_password == credentials['password']:
-                    self.username = ""
-                    self.password = ""
-                    self.gui_loop()
+                        self.username = ""
+                        self.password = ""
+                        self.gui_loop()
+                        return True
 
                 else:
-                    self.username = ""
-                    self.password = ""
-                    self.msg = "wrong username or password"
-                    self.check_auth_gui()
+                        self.username = ""
+                        self.password = ""
+                        self.msg = "wrong username or password"
+                        self.check_auth_gui()
+                        return False
         else:
 
             CreateUser(self)
@@ -78,6 +82,16 @@ class Controller:
             self.password = ""
             
             self.gui_loop()
+            return "set"
+    
+    def set_user(self, username):
+        self.username = username
+
+    def set_password(self, password):
+        self.password = password
+    
+    def set_msg(self, msg):
+        self.mdg = msg
 
     def print_json(self): 
         with open('../templates/template_output_json.json') as out:
