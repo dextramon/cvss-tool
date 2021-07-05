@@ -22,52 +22,15 @@ class Controller:
         self.password = ""
         self.msg = ""
 
-
     def gui_loop(self): 
         root = Tk()
         #get_credentials(root, self)
         self._view = CreationView(root, self)
         root.mainloop()
-        #print(self.username)
 
     def start(self):
         self.msg = "Please enter your credentials"
         self.check_auth_gui()
-    
-    def check_auth_terminal(self):
-    
-        if os.path.isfile('..templates/auth.json'):
-            user_input = self._view.get_credentials()
-            hash_object = hashlib.sha256(user_input[1].encode('ascii'))
-            hash_password = str(hash_object.hexdigest())
-
-
-            with open('templates/auth.json') as auth:
-                credentials = json.load(auth)
-
-                if user_input[0] == credentials['user'] and hash_password == credentials['password']:
-                    print('Login successful')
-                    self.main_loop()
-
-                else:
-                    print('Login failed')
-                    self.start()
-        else:
-            user_input = self._view.create_user()
-            hash_object = hashlib.sha256(user_input[1].encode('ascii'))
-            hash_password = str(hash_object.hexdigest())
-
-            credentials = {
-                'user': user_input[0],
-                'password': hash_password
-
-            }
-
-            with open('../templates/auth.json', 'w') as auth:
-                json.dump(credentials, auth)
-            
-            print('Account is created')
-            self.main_loop()
 
     def check_auth_gui(self):
     
@@ -146,32 +109,6 @@ class Controller:
 
             with open(create_name , 'w') as output:
                 output.write(TXT_OUT)
-
-    def print_pdf(self):
-        with open('../templates/template_output_tex.tex' , 'r') as file:
-            PDF_OUT = file.read()
-            PDF_OUT = PDF_OUT.replace('$asset_name$', self._model.get_asset())
-            PDF_OUT = PDF_OUT.replace('$vul_name$', self._model.get_name())
-            PDF_OUT = PDF_OUT.replace('$base_score$', str(self._model.get_base_score()))
-            PDF_OUT = PDF_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
-            PDF_OUT = PDF_OUT.replace('$env_score$', str(self._model.get_env_score()))
-            vektor = str(self._model.get_vector())
-            PDF_OUT = PDF_OUT.replace('$vektor1$', vektor[:69])
-            PDF_OUT = PDF_OUT.replace('$vektor2$', vektor[69:])
-
-
-            create_name = self._model.get_name() + '_output.tex'
-
-            with open(create_name , 'w') as output:
-                output.write(PDF_OUT)
-
-        x = subprocess.call('pdflatex ' + create_name)
-
-        extensions = ['.aux','.bcf','.lof','.log','.lot','.out','.run.xml','.toc' ,'.tex']
-        os1 = {'Linux' : 'rm', 'Darwin': 'rm', 'Windows': 'del'}
-        opertor = os1[platform.system()]
-        for i in range(len(extensions)):
-            os.system(opertor + ' ' + self._model.get_name()+ '_output' + extensions[i])
 
     def _set_name(self):
         print(self._view.get_name())

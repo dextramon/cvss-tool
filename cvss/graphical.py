@@ -521,15 +521,6 @@ def return_dict():
 }
     return dic
 
-
-
-class Controller:
-    def __init__(self): 
-        root = Tk() 
-        root.geometry("400x400")
-        mv = CreationView(root, self)
-        root.mainloop()
-
 class BaseView(tk.Toplevel): 
     def __init__(self, parent, value, brother):
         super().__init__(parent)
@@ -537,30 +528,38 @@ class BaseView(tk.Toplevel):
         self.mainframe = ttk.Frame(self)
         self._tv = {"AV": StringVar(), "AC": StringVar(), "PR": StringVar(), "UI": StringVar(), "S": StringVar(), "C": StringVar(), "I": StringVar(), "A":StringVar()}
         base_dict = return_dict()
+        self.erroro = StringVar()
 
         self.value = value
         # This frame is needed ot have access to the function of the previous frame, to enable it
         self.brother = brother
 
         self.view_label = ttk.Label(self.mainframe, text="Base Metrics: ")
-        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.error_label = ttk.Label(self.mainframe, textvariable=self.erroro)
         
         self.view_label.grid()
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.submit_button.grid()
         self.create_labels(base_dict)
         self.mainframe.grid()
+        self.error_label.grid()
+        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.submit_button.grid()
+
 
     def print_text(self):
+        
         output_string = f'AV:{self._tv["AV"].get()}/AC:{self._tv["AC"].get()}/PR:{self._tv["PR"].get()}/UI:{self._tv["UI"].get()}/S:{self._tv["S"].get()}/C:{self._tv["C"].get()}/I:{self._tv["I"].get()}/A:{self._tv["A"].get()}'
-        print(output_string)
-        self.brother.controller.set_metric(output_string)
-        self.value.set(self.brother.controller.get_metric(type="BASE"))
-        self.brother.base_score_var.set(self.brother.controller.get_base_score())
-        self.brother.temp_score_var.set(self.brother.controller.get_temp_score())#
-        self.brother.env_score_var.set(self.brother.controller.get_env_score())
-        self.brother.controller.print_hello()
-        self.brother.check_status()
+        
+        try:
+            self.brother.controller.set_metric(output_string)
+            self.value.set(self.brother.controller.get_metric(type="BASE"))
+            self.brother.base_score_var.set(self.brother.controller.get_base_score())
+            self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
+            self.brother.env_score_var.set(self.brother.controller.get_env_score())
+            self.brother.check_status()
+            self.brother.destroy_top_level()
+        except Exception:
+            self.erroro.set("YOU HAVE TO SELECT ALL VALUES")
 
     def create_labels(self, dict_values): 
         for i in dict_values:
@@ -579,12 +578,12 @@ class TempView(tk.Toplevel):
         self.brother = brother
 
         self.view_label = ttk.Label(self.mainframe, text="Temporal Metrics: ")
-        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
         
         self.view_label.grid()
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.submit_button.grid()
         self.create_labels(temp_dict)
+        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.submit_button.grid()
         self.mainframe.grid()
 
     def print_text(self):
@@ -594,6 +593,7 @@ class TempView(tk.Toplevel):
         self.value.set(self.brother.controller.get_metric(type="TEMP"))
         self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
         self.brother.check_status()
+        self.brother.destroy_top_level()
 
     def create_labels(self, dict_values): 
         for i in dict_values:
@@ -613,12 +613,12 @@ class EnvView(tk.Toplevel):
         self.brother=brother
 
         self.view_label = ttk.Label(self.mainframe, text="Environmental Score: ")
-        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
         
         self.view_label.grid()
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.submit_button.grid()
         self.create_labels(env_dict)
+        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.submit_button.grid()
         self.mainframe.grid()
 
     def print_text(self):
@@ -628,6 +628,7 @@ class EnvView(tk.Toplevel):
         self.value.set(self.brother.controller.get_metric(type="ENV"))
         self.brother.env_score_var.set(self.brother.controller.get_env_score())
         self.brother.check_status()
+        self.brother.destroy_top_level()
 
     def create_labels(self, dict_values): 
         for i in dict_values:
@@ -639,6 +640,8 @@ class EnvView(tk.Toplevel):
 class CreationView: 
     def __init__(self, parent, controller): 
         self.frame = ttk.Frame(parent)
+
+        self.t1 = None 
 
         self.controller = controller
         self.vul_str = StringVar()
@@ -666,7 +669,7 @@ class CreationView:
         temp_score_value = ttk.Label(self.frame, textvariable=self.temp_score_var)
         self.temp_score_button_var =  StringVar() 
         self.temp_score_button_var.set("Not set yet!")
-        temp_score_button = ttk.Button(self.frame, textvariable=self.temp_score_button_var, command=self.temp_top_level ,width=50)
+        self.temp_score_button = ttk.Button(self.frame, textvariable=self.temp_score_button_var, command=self.temp_top_level ,width=50, state=DISABLED)
 
         env_score = ttk.Label(self.frame, text="Environmental Score: ")
         self.env_score_var = DoubleVar()
@@ -674,7 +677,7 @@ class CreationView:
         env_score_value = ttk.Label(self.frame, textvariable=self.env_score_var)
         self.env_score_button_var =  StringVar() 
         self.env_score_button_var.set("Not set yet!")
-        env_score_button = ttk.Button(self.frame, textvariable=self.env_score_button_var, command=self.env_top_level, width=50)
+        self.env_score_button = ttk.Button(self.frame, textvariable=self.env_score_button_var, command=self.env_top_level, width=50, state=DISABLED)
 
 
         asset_name.grid(column=0,row=0, columnspan=2) 
@@ -686,10 +689,10 @@ class CreationView:
         base_score_button.grid(column=0,row=5, columnspan=2)
         temp_score.grid(column=0, row=6)
         temp_score_value.grid(column=1, row=6)
-        temp_score_button.grid(column=0, row=7, columnspan=2)
+        self.temp_score_button.grid(column=0, row=7, columnspan=2)
         env_score.grid(column=0, row=8)
         env_score_value.grid(column=1, row=8)
-        env_score_button.grid(column=0, row=9, columnspan=2)
+        self.env_score_button.grid(column=0, row=9, columnspan=2)
 
         self.txtbutton.grid(column=0, row=10)
         self.jsonbutton.grid(column=1, row=10)
@@ -706,19 +709,27 @@ class CreationView:
         self.controller.set_asset(self.asset_str.get())
         self.controller.print_json()
 
+    def destroy_top_level(self):
+        
+        self.t1.destroy()
+
     def base_top_level(self): 
-        t1 = BaseView(self.frame, self.base_score_button_var, self)
+        self.t1 = BaseView(self.frame, self.base_score_button_var, self)
 
     def temp_top_level(self): 
-        t1 = TempView(self.frame, self.temp_score_button_var, self)
+        self.t1 = TempView(self.frame, self.temp_score_button_var, self)
 
     def env_top_level(self): 
-        t1 = EnvView(self.frame, self.env_score_button_var, self)
+        self.t1 = EnvView(self.frame, self.env_score_button_var, self)
 
     def check_status(self): 
         if self.base_score_button_var.get() != "Not set yet!": 
             self.txtbutton.configure(state=NORMAL)
             self.jsonbutton.configure(state=NORMAL)
+            self.env_score_button.configure(state=NORMAL)
+            self.env_score_button_var.set(self.controller.get_metric(type="ENV"))
+            self.temp_score_button_var.set(self.controller.get_metric(type="TEMP"))
+            self.temp_score_button.configure(state=NORMAL)
 
 
 class MetricOptions: 
