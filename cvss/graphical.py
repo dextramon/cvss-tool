@@ -775,9 +775,14 @@ class GetCredentials:
         self.root.mainloop()
 
     def submit_form(self): 
-        self.controller.set_user(self.user_str.get())
-        self.controller.set_password(self.password_str.get())
-        self.root.destroy()
+        if self.user_str.get() == "" and self.password_str.get() == "": 
+                self.root.destroy()
+                GetCredentials(self.controller, "fields cannot be empty")
+        else:
+            self.controller.set_user(self.user_str.get())
+            self.controller.set_password(self.password_str.get())
+            self.root.destroy()
+
     
 class CreateUser: 
     def __init__(self, controller): 
@@ -819,9 +824,13 @@ class CreateUser:
         self.root.mainloop()
 
     def submit_form(self): 
-        self.controller.set_user(self.user_str.get())
-        self.controller.set_password(self.password_str.get())
-        self.root.destroy()
+        if self.user_str.get() == "" and self.password_str.get() == "": 
+            self.root.destroy()
+            GetCredentials(self.controller, "Please enter username AND password")
+        else:
+            self.controller.set_user(self.user_str.get())
+            self.controller.set_password(self.password_str.get())
+            self.root.destroy()
 
 if __name__ == "__main__": 
 
