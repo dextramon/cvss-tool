@@ -29,7 +29,7 @@ class Controller:
         #print(self.username)
 
     def start(self):
-        self.check_auth_gui()
+        self.check_auth_gui("Please enter your credentials")
     
     def check_auth_terminal(self):
     
@@ -66,11 +66,11 @@ class Controller:
             print('Account is created')
             self.main_loop()
 
-    def check_auth_gui(self):
+    def check_auth_gui(self,msg):
     
         if os.path.isfile('../templates/auth.json'):
 
-            GetCredentials(self)
+            GetCredentials(self, msg)
             
             if self.username == "" and self.password == "":
                 exit(1)
@@ -90,7 +90,7 @@ class Controller:
                 else:
                     self.username = ""
                     self.password = ""
-                    self.start()
+                    self.check_auth_gui("wrong username or password")
         else:
 
             CreateUser(self)
