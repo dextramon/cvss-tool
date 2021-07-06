@@ -21,11 +21,13 @@ class Controller:
     def gui_loop(self): 
         root = Tk()
         #get_credentials(root, self)
+        root.resizable(False,False)
+        root.title('cvsslator')
         self._view = CreationView(root, self)
         root.mainloop()
 
     def start(self):
-        self.msg = "Please enter your credentials"
+        self.msg = "LOGIN"
         self.check_auth_gui()
 
     def check_auth_gui(self):
@@ -55,7 +57,7 @@ class Controller:
                 else:
                         self.username = ""
                         self.password = ""
-                        self.msg = "wrong username or password"
+                        self.msg = "Unknown Combination!"
                         self.check_auth_gui()
                         return False
         else:
@@ -100,7 +102,7 @@ class Controller:
         JSON_OUT['temp_score'] = self._model.get_temp_score()
         JSON_OUT['env_score'] = self._model.get_env_score()
 
-        create_name = self._model.get_name() + '_output.json'
+        create_name = '../output/' + self._model.get_name() + '_output.json'
         
         with open(create_name, 'w') as out2:
             out2.write(json.dumps(JSON_OUT, indent=4))

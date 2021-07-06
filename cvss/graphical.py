@@ -85,7 +85,7 @@ def return_temp():
                 "name": "Reasonable",
                 "value": 0,
             },
-            "R": {
+            "U": {
                 "description": "f", 
                 "name": "Unknown",
                 "value": 0,
@@ -529,6 +529,7 @@ class BaseView(tk.Toplevel):
         self._tv = {"AV": StringVar(), "AC": StringVar(), "PR": StringVar(), "UI": StringVar(), "S": StringVar(), "C": StringVar(), "I": StringVar(), "A":StringVar()}
         base_dict = return_dict()
         self.erroro = StringVar()
+        self.title("cvvslator Base")
 
         self.value = value
         # This frame is needed ot have access to the function of the previous frame, to enable it
@@ -537,11 +538,11 @@ class BaseView(tk.Toplevel):
         self.view_label = ttk.Label(self.mainframe, text="Base Metrics: ")
         self.error_label = ttk.Label(self.mainframe, textvariable=self.erroro)
         
-        self.view_label.grid()
+        self.view_label.grid(pady=10)
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
         self.create_labels(base_dict)
-        self.mainframe.grid()
-        self.error_label.grid()
+        self.mainframe.grid(pady=10, padx=10)
+        self.error_label.grid(pady=10)
         self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
         self.submit_button.grid()
 
@@ -574,20 +575,20 @@ class TempView(tk.Toplevel):
         self.value_hold = {"E": StringVar(), "RL": StringVar(), "RC": StringVar()}
         temp_dict = return_temp()
         self.value = value
+        self.title("cvvslator Temporal")
         self.brother = brother
 
         self.view_label = ttk.Label(self.mainframe, text="Temporal Metrics: ")
         
-        self.view_label.grid()
+        self.view_label.grid(pady=10)
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
         self.create_labels(temp_dict)
         self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
         self.submit_button.grid()
-        self.mainframe.grid()
+        self.mainframe.grid(pady=10, padx=10)
 
     def print_text(self):
         for i in self.value_hold: 
-            print(self.value_hold[i])
             self.brother.controller.set_metric(i, self.value_hold[i].get())
         self.value.set(self.brother.controller.get_metric(type="TEMP"))
         self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
@@ -608,21 +609,20 @@ class EnvView(tk.Toplevel):
         self.value_hold = {"CR": StringVar(), "IR": StringVar(), "AR": StringVar(), "MAV": StringVar(), "MAC": StringVar(), "MPR": StringVar(), "MUI": StringVar(), "MS": StringVar(), "MC": StringVar(), "MI": StringVar(), "MA":StringVar()}
         env_dict = return_env()
         self.value = value
-
+        self.title("cvvslator Environmental")
         self.brother=brother
 
         self.view_label = ttk.Label(self.mainframe, text="Environmental Score: ")
         
-        self.view_label.grid()
+        self.view_label.grid(pady=10)
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
         self.create_labels(env_dict)
         self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
         self.submit_button.grid()
-        self.mainframe.grid()
+        self.mainframe.grid(pady=10, padx=10)
 
     def print_text(self):
         for i in self.value_hold: 
-            print(self.value_hold[i])
             self.brother.controller.set_metric(i, self.value_hold[i].get())
         self.value.set(self.brother.controller.get_metric(type="ENV"))
         self.brother.env_score_var.set(self.brother.controller.get_env_score())
@@ -645,11 +645,11 @@ class CreationView:
         self.controller = controller
         self.vul_str = StringVar()
         vul_name = ttk.Label(self.frame, text="Vulnerability Name: ")
-        vul_entry = ttk.Entry(self.frame, textvariable=self.vul_str)
+        vul_entry = ttk.Entry(self.frame, textvariable=self.vul_str, width=50)
 
         self.asset_str = StringVar() 
-        asset_name = ttk.Label(self.frame, text="Asste Name: ")
-        asset_entry = ttk.Entry(self.frame, textvariable=self.asset_str)
+        asset_name = ttk.Label(self.frame, text="Asset Name: ")
+        asset_entry = ttk.Entry(self.frame, textvariable=self.asset_str, width=50)
 
         self.txtbutton = ttk.Button(self.frame, text="Print .TXT", command=self.submit_txt, state=DISABLED)
         self.jsonbutton = ttk.Button(self.frame, text="Print .JSON", command=self.submit_json, state=DISABLED)
@@ -674,38 +674,44 @@ class CreationView:
         self.env_score_var = DoubleVar()
         self.env_score_var.set(0.0)
         env_score_value = ttk.Label(self.frame, textvariable=self.env_score_var)
+        self.error_str = StringVar()
+        self.error_label = ttk.Label(self.frame, textvariable=self.error_str)
         self.env_score_button_var =  StringVar() 
         self.env_score_button_var.set("Not set yet!")
         self.env_score_button = ttk.Button(self.frame, textvariable=self.env_score_button_var, command=self.env_top_level, width=50, state=DISABLED)
 
 
-        asset_name.grid(column=0,row=0, columnspan=2) 
-        asset_entry.grid(column=0,row=1, columnspan=2)
-        vul_name.grid(column=0,row=2, columnspan=2)
-        vul_entry.grid(column=0,row=3, columnspan=2)
-        base_score.grid(column=0,row=4)
+        asset_name.grid(column=0,row=0, columnspan=2, pady=5) 
+        asset_entry.grid(column=0,row=1, columnspan=2, pady=5)
+        vul_name.grid(column=0,row=2, columnspan=2, pady=5)
+        vul_entry.grid(column=0,row=3, columnspan=2, pady=5)
+        base_score.grid(column=0,row=4, pady=5)
         base_score_value.grid(column=1, row=4)
         base_score_button.grid(column=0,row=5, columnspan=2)
-        temp_score.grid(column=0, row=6)
+        temp_score.grid(column=0, row=6, pady=5)
         temp_score_value.grid(column=1, row=6)
         self.temp_score_button.grid(column=0, row=7, columnspan=2)
-        env_score.grid(column=0, row=8)
+        env_score.grid(column=0, row=8, pady=5)
         env_score_value.grid(column=1, row=8)
         self.env_score_button.grid(column=0, row=9, columnspan=2)
 
-        self.txtbutton.grid(column=0, row=10)
-        self.jsonbutton.grid(column=1, row=10)
 
-        self.frame.grid() 
+        self.error_label.grid(column=0, columnspan=2, row=10 ,pady=10)
+        self.txtbutton.grid(column=0, row=11,pady=10)
+        self.jsonbutton.grid(column=1, row=11, pady=10)
+
+        self.frame.grid(padx=10, pady=10) 
 
     def submit_txt(self): 
         self.controller.set_vul(self.vul_str.get())
         self.controller.set_asset(self.asset_str.get())
+        self.error_str.set(f"{self.asset_str.get()}.txt has been created!")
         self.controller.print_txt()
 
     def submit_json(self): 
         self.controller.set_vul(self.vul_str.get())
         self.controller.set_asset(self.asset_str.get())
+        self.error_str.set(f"{self.asset_str.get()}.json has been created!")
         self.controller.print_json()
 
     def destroy_top_level(self):
@@ -748,10 +754,9 @@ class MetricOptions:
 class GetCredentials: 
     def __init__(self, controller, msg): 
         self.root = Tk()
-        self.root.title('cvss-tool')
-        self.root.geometry('275x125')
-        self.root.minsize(275, 125)
-        self.root.maxsize(275, 125)
+        self.root.title('cvsslator Login')
+        self.root.resizable(False,False)
+
         self.frame = ttk.Frame(self.root)
         self.controller = controller
 
@@ -759,35 +764,30 @@ class GetCredentials:
         msg = ttk.Label(self.frame, text=msg)
 
         self.user_str = StringVar()
-        user_name = ttk.Label(self.frame, text="Username ")
+        user_name = ttk.Label(self.frame, text="Username")
         user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
 
         self.password_str = StringVar() 
-        password_name = ttk.Label(self.frame, text="Password ")
+        password_name = ttk.Label(self.frame, text="Password")
         password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
 
-        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=ACTIVE)
+        self.button = ttk.Button(self.frame, text="Submit", command=self.submit_form, state=ACTIVE)
 
-        l0 = tk.Label(self.frame, text='     \n   ')
-        l1 = tk.Label(self.frame, text='     \n   ')
-        l0.grid(column=0, row=0)
-        l1.grid(column=0, row=9)
+        msg.grid(column=0,row=0, pady=10)
+        user_name.grid(column=0, row=1)
+        user_entry.grid(column=0,row=2)
+        password_name.grid(column=0, row=3)
+        password_entry.grid(column=0, row=4)
+        self.button.grid(column=0, row=5, pady=10)
 
-        msg.grid(column=3,row=0, columnspan=2)
-        user_name.grid(column=1,row=1, columnspan=2)
-        user_entry.grid(column=3,row=1, columnspan=2)
-        password_name.grid(column=1,row=3, columnspan=2) 
-        password_entry.grid(column=3,row=3, columnspan=2)
-        self.button.grid(column=3, row=9, columnspan=2)
-
-        self.frame.grid() 
+        self.frame.grid(padx=25, pady=25) 
 
         self.root.mainloop()
 
     def submit_form(self): 
         if self.user_str.get() == "" and self.password_str.get() == "": 
                 self.root.destroy()
-                GetCredentials(self.controller, "fields cannot be empty")
+                GetCredentials(self.controller, "Field may not be empty")
         else:
             self.controller.set_user(self.user_str.get())
             self.controller.set_password(self.password_str.get())
@@ -797,52 +797,40 @@ class GetCredentials:
 class CreateUser: 
     def __init__(self, controller): 
         self.root = Tk()
-        self.root.title('cvss-tool')
-        self.root.geometry('275x125')
-        self.root.minsize(275, 125)
-        self.root.maxsize(275, 125)
+        self.root.resizable(False,False)
+        self.root.title('cvsslator Registrierung')
         self.frame = ttk.Frame(self.root)
         self.controller = controller
 
         self.msg = StringVar()
-        msg = ttk.Label(self.frame, text="Please create your account")
+        msg = ttk.Label(self.frame, text="CREATE YOUR ACCOUNT")
 
         self.user_str = StringVar()
-        user_name = ttk.Label(self.frame, text="Username ")
+        user_name = ttk.Label(self.frame, text="Username")
         user_entry = ttk.Entry(self.frame, textvariable=self.user_str)
 
         self.password_str = StringVar() 
-        password_name = ttk.Label(self.frame, text="Password ")
+        password_name = ttk.Label(self.frame, text="Password")
         password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
 
-        self.button = ttk.Button(self.frame, text="submit", command=self.submit_form, state=ACTIVE)
+        self.button = ttk.Button(self.frame, text="Submit", command=self.submit_form, state=ACTIVE)
 
-        l0 = tk.Label(self.frame, text='     \n   ')
-        l1 = tk.Label(self.frame, text='     \n   ')
-        l0.grid(column=0, row=0)
-        l1.grid(column=0, row=9)
+        msg.grid(column=0,row=0, pady=10)
+        user_name.grid(column=0, row=1)
+        user_entry.grid(column=0,row=2)
+        password_name.grid(column=0, row=3)
+        password_entry.grid(column=0, row=4)
+        self.button.grid(column=0, row=5, pady=10)
 
-        msg.grid(column=3,row=0, columnspan=2)
-        user_name.grid(column=1,row=1, columnspan=2)
-        user_entry.grid(column=3,row=1, columnspan=2)
-        password_name.grid(column=1,row=3, columnspan=2) 
-        password_entry.grid(column=3,row=3, columnspan=2)
-        self.button.grid(column=3, row=9, columnspan=2)
-
-        self.frame.grid() 
+        self.frame.grid(padx=25, pady=25) 
 
         self.root.mainloop()
 
     def submit_form(self): 
         if self.user_str.get() == "" and self.password_str.get() == "": 
             self.root.destroy()
-            GetCredentials(self.controller, "Please enter username AND password")
+            GetCredentials(self.controller, "Unknown Combination!")
         else:
             self.controller.set_user(self.user_str.get())
             self.controller.set_password(self.password_str.get())
             self.root.destroy()
-
-if __name__ == "__main__": 
-
-    c = Controller()
-
