@@ -12,6 +12,89 @@ from graphical import GetCredentials
 from graphical import CreateUser
 
 class Controller: 
+    """
+    Controller of the Model View Controller
+
+    ...
+
+    Attributes
+    ----------
+    model: Vulnerability
+        a variable to save all information about the Vulnerability
+
+    username: str
+        username is required for login
+
+    password: str
+        password is required for login
+
+    msg: str
+        msg is required for the login View
+
+    Methods
+    -------
+    says(sound=None)
+        Prints the animals name and what sound it makes
+
+    gui_loop(self)
+        the main loop of the calculator application, the root is a Tk Window
+
+    start(self)
+        authentication that is required to get access to the program
+
+    check_auth_gui(self)
+        is checking if a auth.json (contains userdata) is in the template folder. if true
+            the programm will start with the login window otherwise with the sign up window
+
+    set_user(self, user):
+        setting the current user
+
+    set_password(self, password):
+        setting the current password
+
+    set_msg(self, msg):
+        setting the message that is required 
+
+    print_json(self)
+        creates an .json file. the name of the file is the same as for model.get_name().    
+            the file is saved inside the output folder.
+
+    print_txt(self)
+        creates an .json file. the name of the file is the same as for model.get_name().    
+            the file is saved inside the output folder.
+
+    get_vector(self) -> str
+        return the CVSS 3.1 Vector
+
+    set_metric(self, base_string, value=None)
+        is changing the values of the vector. if the value is None (default) the  program is 
+            got the base score from the view and is setting it for the model. otherwise
+            its just a single metric which sets the value for the base_string 
+
+    get_metric(self, env): -> str
+        returns the value of the selected metric BASE, ENV, TEMP
+
+    get_base_score(self):
+        returns the base_score
+
+    get_env_score(self):
+        return the environmental score
+
+    get_temp_score(self):
+        return the temp  score
+
+    set_asset(self):
+        set the name of the asset
+
+    set_vul(self):
+        set the name  of the vulnerability
+
+    get_user(self):
+        get the name of the user
+
+    get_password(self):
+        get the name of the password
+    """
     def __init__(self): 
         self._model = Vulnerability()
         self.username = ""
@@ -117,13 +200,11 @@ class Controller:
             TXT_OUT = TXT_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
             TXT_OUT = TXT_OUT.replace('$env_score$', str(self._model.get_env_score()))
 
-            create_name = self._model.get_name() + '_output.txt'
+            create_name = '../output/' + self._model.get_name() + '_output.txt'
+
 
             with open(create_name , 'w') as output:
                 output.write(TXT_OUT)
-
-    def _set_name(self):
-        print(self._view.get_name())
 
     def get_vector(self): 
         return self._model.get_vector()
@@ -159,14 +240,8 @@ class Controller:
     def set_asset(self, value):
         self._model.set_asset(value)
     
-    def set_user(self, value):
-        self.username = value
-    
     def get_user(self):
         return self.username
-    
-    def set_password(self, value):
-        self.password = value
     
     def get_password(self):
         return self.password
