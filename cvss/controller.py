@@ -187,6 +187,7 @@ class Controller:
         JSON_OUT['base_score'] = self._model.get_base_score()
         JSON_OUT['temp_score'] = self._model.get_temp_score()
         JSON_OUT['env_score'] = self._model.get_env_score()
+        JSON_OUT['total_score'] = self._model.get_total_score()
 
         create_name = '../output/' + self._model.get_asset_name() + '_output.json'
         
@@ -204,6 +205,8 @@ class Controller:
             TXT_OUT = TXT_OUT.replace('$base_score$', str(self._model.get_base_score()))
             TXT_OUT = TXT_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
             TXT_OUT = TXT_OUT.replace('$env_score$', str(self._model.get_env_score()))
+            TXT_OUT = TXT_OUT.replace('$total_score$', str(self._model.get_total_score()))
+
 
             create_name = '../output/' + self._model.get_asset_name() + '_output.txt'
 
