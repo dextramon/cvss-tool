@@ -181,14 +181,14 @@ class Controller:
             except json.decoder.JSONDecodeError:
                 return False
         
-        JSON_OUT['asset_name'] = self._model.get_asset()
-        JSON_OUT['vuln_name'] = self._model.get_name()
+        JSON_OUT['asset_name'] = self._model.get_asset_name()
+        JSON_OUT['vuln_name'] = self._model.get_vulnerability_name()
         JSON_OUT['vektor'] = self._model.get_vector()
         JSON_OUT['base_score'] = self._model.get_base_score()
         JSON_OUT['temp_score'] = self._model.get_temp_score()
         JSON_OUT['env_score'] = self._model.get_env_score()
 
-        create_name = '../output/' + self._model.get_name() + '_output.json'
+        create_name = '../output/' + self._model.get_asset_name() + '_output.json'
         
         with open(create_name, 'w') as out2:
             out2.write(json.dumps(JSON_OUT, indent=4))
@@ -198,14 +198,14 @@ class Controller:
     def print_txt(self): 
         with open('../templates/template_output_txt.txt' , 'r') as file:
             TXT_OUT = file.read()
-            TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_asset())
-            TXT_OUT = TXT_OUT.replace('$vul_name$', self._model.get_name())
+            TXT_OUT = TXT_OUT.replace('$asset_name$', self._model.get_asset_name())
+            TXT_OUT = TXT_OUT.replace('$vul_name$', self._model.get_vulnerability_name())
             TXT_OUT = TXT_OUT.replace('$vektor$', str(self._model.get_vector()))
             TXT_OUT = TXT_OUT.replace('$base_score$', str(self._model.get_base_score()))
             TXT_OUT = TXT_OUT.replace('$temp_score$', str(self._model.get_temp_score()))
             TXT_OUT = TXT_OUT.replace('$env_score$', str(self._model.get_env_score()))
 
-            create_name = '../output/' + self._model.get_name() + '_output.txt'
+            create_name = '../output/' + self._model.get_asset_name() + '_output.txt'
 
 
             with open(create_name , 'w') as output:
@@ -240,10 +240,10 @@ class Controller:
         return self._model.get_temp_score()
 
     def set_vul(self, value): 
-        self._model.set_name(value)
+        self._model.set_vulnerability_name(value)
     
     def set_asset(self, value):
-        self._model.set_asset(value)
+        self._model.set_asset_name(value)
     
     def get_user(self):
         return self.username
