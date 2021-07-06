@@ -11,10 +11,6 @@ from graphical import CreationView
 from graphical import GetCredentials
 from graphical import CreateUser
 
-#JSON Integration
-with open('../templates/data.json') as f:
-    data = json.load(f)
-
 class Controller: 
     def __init__(self): 
         self._model = Vulnerability()
@@ -46,7 +42,7 @@ class Controller:
 
 
 
-                with open('templates/auth.json') as auth:
+                with open('../templates/auth.json') as auth:
                    credentials = json.load(auth)
 
 
