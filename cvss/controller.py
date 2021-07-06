@@ -172,7 +172,7 @@ class Controller:
         self.password = password
     
     def set_msg(self, msg):
-        self.mdg = msg
+        self.msg = msg
 
     def print_json(self): 
         with open('../templates/template_output_json.json') as out:
