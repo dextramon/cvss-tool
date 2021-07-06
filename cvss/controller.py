@@ -176,7 +176,10 @@ class Controller:
 
     def print_json(self): 
         with open('../templates/template_output_json.json') as out:
-            JSON_OUT = json.load(out)
+            try:
+            	JSON_OUT = json.load(out)
+            except json.decoder.JSONDecodeError:
+                return False
         
         JSON_OUT['asset_name'] = self._model.get_asset()
         JSON_OUT['vuln_name'] = self._model.get_name()
@@ -189,6 +192,8 @@ class Controller:
         
         with open(create_name, 'w') as out2:
             out2.write(json.dumps(JSON_OUT, indent=4))
+
+        return True
 
     def print_txt(self): 
         with open('../templates/template_output_txt.txt' , 'r') as file:

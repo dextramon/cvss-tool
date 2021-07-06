@@ -711,8 +711,11 @@ class CreationView:
     def submit_json(self): 
         self.controller.set_vul(self.vul_str.get())
         self.controller.set_asset(self.asset_str.get())
-        self.error_str.set(f"{self.asset_str.get()}.json has been created!")
-        self.controller.print_json()
+
+        if self.controller.print_json() == True:
+        	self.error_str.set(f"{self.asset_str.get()}.json has been created!")
+        else:
+        	self.error_str.set("JSON Template is corrupted!")
 
     def destroy_top_level(self):
         
