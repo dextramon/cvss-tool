@@ -5,8 +5,240 @@ from tkinter import ttk
 import tkinter as tk
 from abc import ABC, abstractclassmethod
 
-def return_temp(): 
-    dic = {
+class BaseView(tk.Toplevel): 
+    def __init__(self, parent, value, brother):
+        super().__init__(parent)
+
+        self.mainframe = ttk.Frame(self)
+        self._tv = {"AV": StringVar(), "AC": StringVar(), "PR": StringVar(), "UI": StringVar(), "S": StringVar(), "C": StringVar(), "I": StringVar(), "A":StringVar()}
+        self.erroro = StringVar()
+        self.title("cvvslator Base")
+
+        self.value = value
+        # This frame is needed ot have access to the function of the previous frame, to enable it
+        self.brother = brother
+
+        self.view_label = ttk.Label(self.mainframe, text="Base Metrics: ")
+        self.error_label = ttk.Label(self.mainframe, textvariable=self.erroro)
+        
+        self.view_label.grid(pady=10)
+        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
+        self.create_labels(self._get_base_metrics())
+        self.mainframe.grid(pady=10, padx=10)
+        self.error_label.grid(pady=10)
+        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.submit_button.grid()
+
+
+    def print_text(self):
+        
+        output_string = f'AV:{self._tv["AV"].get()}/AC:{self._tv["AC"].get()}/PR:{self._tv["PR"].get()}/UI:{self._tv["UI"].get()}/S:{self._tv["S"].get()}/C:{self._tv["C"].get()}/I:{self._tv["I"].get()}/A:{self._tv["A"].get()}'
+        
+        try:
+            self.brother.controller.set_metric(output_string)
+            self.value.set(self.brother.controller.get_metric(type="BASE"))
+            self.brother.base_score_var.set(self.brother.controller.get_base_score())
+            self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
+            self.brother.env_score_var.set(self.brother.controller.get_env_score())
+            self.brother.check_status()
+            self.brother.destroy_top_level()
+        except Exception:
+            self.erroro.set("YOU HAVE TO SELECT ALL VALUES")
+
+    def _get_base_metrics(self):
+        return {
+            "AV": {
+            "name": "Attack Vector", 
+            "options": {
+                "N": {
+                    "description": "asd",
+                    "name": "Network",
+                    "value": 0,
+                },
+                "A": {
+                    "description": "asd",
+                    "name": "Adjacent",
+                    "value": 0,
+                },
+                "L": {
+                    "description": "asd",
+                    "name": "Local",
+                    "value": 0,
+                },
+                "P": {
+                    "description": "asd",
+                    "name": "Physical",
+                    "value": 0,
+                },
+            }
+        }, 
+        "AC": {
+        "name": "Attack Complexity", 
+        "options": {
+            "L": {
+                "description": "", 
+                "name": "Low",
+                "value": 0,
+            },
+            "H": {
+                "description": "", 
+                "name": "High",
+                "value": 0,
+            }
+        }
+    }, 
+    "PR": {
+        "name": "Privileges Required", 
+        "options": {
+            "N": {
+                "description": "", 
+                "name": "None",
+                "value": 0,
+            },
+            "H": {
+                "description": "", 
+                "name": "High",
+                "value": 0,
+            },
+            "L": {
+                "description": "f", 
+                "name": "Low",
+                "value": 0,
+            },
+        }
+    },
+    "UI": {
+        "name": "User Interaction",
+        "options": {
+            "N": {
+                "description": "",
+                "name": "None",
+                "value": 0,
+            },
+            "R": {
+                "description": "",
+                "name": "Required",
+                "value": 0,
+            }
+        }
+    },
+    "S": {
+        "name": "Scope", 
+        "options": {
+            "C": {
+                "description": "",
+                "name": "Changed",
+                "value": 0, 
+            }, 
+            "U": {
+                "description": "",
+                "name": "Unchanged",
+                "value": 0,
+            }
+        }
+    }, 
+    "C": {
+        "name": "Confidentiality",
+        "options": {
+            "H": {
+                "description": "",
+                "name": "High",
+                "value": 0,
+            },
+            "L": {
+                "description": "",
+                "name": "Low",
+                "value": 0,
+            },
+            "N": {
+                "description": "",
+                "name": "None",
+                "value": 0,
+            },
+        }
+    },
+    "I": {
+        "name": "Integrity",
+        "options": {
+            "H": {
+                "description": "",
+                "name": "High",
+                "value": 0,
+            },
+            "L": {
+                "description": "",
+                "name": "Low",
+                "value": 0,
+            },
+            "N": {
+                "description": "",
+                "name": "None",
+                "value": 0,
+            },
+        }
+    },
+    "A": {
+        "name": "Availability",
+        "options": {
+            "H": {
+                "description": "",
+                "name": "High",
+                "value": 0,
+            },
+            "L": {
+                "description": "",
+                "name": "Low",
+                "value": 0,
+            },
+            "N": {
+                "description": "",
+                "name": "None",
+                "value": 0,
+            },
+        }
+    }
+}
+
+    def create_labels(self, dict_values): 
+        for i in dict_values:
+            metric_label = ttk.Label(self.mainframe, text=dict_values[i]["name"])
+            metric_label.grid()
+            MetricOptions(parent=self.mainframe, valueholder=self._tv[i], values=i, dict=self._get_base_metrics())
+
+class TempView(tk.Toplevel): 
+    def __init__(self, parent, value, brother):
+        super().__init__(parent)
+        self.mainframe = ttk.Frame(self)
+        self.value_hold = {"E": StringVar(), "RL": StringVar(), "RC": StringVar()}
+        self.value = value
+        self.title("cvvslator Temporal")
+        self.brother = brother
+
+        self.view_label = ttk.Label(self.mainframe, text="Temporal Metrics: ")
+        
+        self.view_label.grid(pady=10)
+        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
+        self.create_labels(self._get_temp_metrics())
+        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.submit_button.grid()
+        self.mainframe.grid(pady=10, padx=10)
+
+    def print_text(self):
+        for i in self.value_hold: 
+            self.brother.controller.set_metric(i, self.value_hold[i].get())
+        self.value.set(self.brother.controller.get_metric(type="TEMP"))
+        self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
+        self.brother.check_status()
+        self.brother.destroy_top_level()
+
+    def create_labels(self, dict_values): 
+        for i in dict_values:
+            metric_label = ttk.Label(self.mainframe, text=dict_values[i]["name"])
+            metric_label.grid()
+            MetricOptions(parent=self.mainframe, valueholder=self.value_hold[i], values=i, dict=self._get_temp_metrics(), val="X")
+
+    def _get_temp_metrics(self):
+        return  {
         "E": {
             "name": "Exploit Code Maturity", 
             "options": {
@@ -94,10 +326,42 @@ def return_temp():
     },
     
 }
-    return dic
 
-def return_env(): 
-    dic = {
+
+class EnvView(tk.Toplevel): 
+    def __init__(self, parent, value, brother):
+        super().__init__(parent)
+        self.mainframe = ttk.Frame(self)
+        self.value_hold = {"CR": StringVar(), "IR": StringVar(), "AR": StringVar(), "MAV": StringVar(), "MAC": StringVar(), "MPR": StringVar(), "MUI": StringVar(), "MS": StringVar(), "MC": StringVar(), "MI": StringVar(), "MA":StringVar()}
+        self.value = value
+        self.title("cvvslator Environmental")
+        self.brother=brother
+
+        self.view_label = ttk.Label(self.mainframe, text="Environmental Score: ")
+        
+        self.view_label.grid(pady=10)
+        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
+        self.create_labels(self._get_env_metric())
+        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+        self.submit_button.grid()
+        self.mainframe.grid(pady=10, padx=10)
+
+    def print_text(self):
+        for i in self.value_hold: 
+            self.brother.controller.set_metric(i, self.value_hold[i].get())
+        self.value.set(self.brother.controller.get_metric(type="ENV"))
+        self.brother.env_score_var.set(self.brother.controller.get_env_score())
+        self.brother.check_status()
+        self.brother.destroy_top_level()
+
+    def create_labels(self, dict_values): 
+        for i in dict_values:
+            metric_label = ttk.Label(self.mainframe, text=dict_values[i]["name"])
+            metric_label.grid()
+            MetricOptions(parent=self.mainframe, valueholder=self.value_hold[i], values=i, dict=self._get_env_metric(), val="X")
+
+    def _get_env_metric(self):
+        return {
         "CR": {
             "name": "Confidentiality Requirement", 
             "options": {
@@ -364,276 +628,6 @@ def return_env():
         }
     }
 }
-    return dic
-
-def return_dict(): 
-    dic = {
-        "AV": {
-        "name": "Attack Vector", 
-        "options": {
-            "N": {
-                "description": "asd",
-                "name": "Network",
-                "value": 0,
-            },
-            "A": {
-                "description": "asd",
-                "name": "Adjacent",
-                "value": 0,
-            },
-            "L": {
-                "description": "asd",
-                "name": "Local",
-                "value": 0,
-            },
-            "P": {
-                "description": "asd",
-                "name": "Physical",
-                "value": 0,
-            },
-        }
-    }, 
-    "AC": {
-        "name": "Attack Complexity", 
-        "options": {
-            "L": {
-                "description": "", 
-                "name": "Low",
-                "value": 0,
-            },
-            "H": {
-                "description": "", 
-                "name": "High",
-                "value": 0,
-            }
-        }
-    }, 
-    "PR": {
-        "name": "Privileges Required", 
-        "options": {
-            "N": {
-                "description": "", 
-                "name": "None",
-                "value": 0,
-            },
-            "H": {
-                "description": "", 
-                "name": "High",
-                "value": 0,
-            },
-            "L": {
-                "description": "f", 
-                "name": "Low",
-                "value": 0,
-            },
-        }
-    },
-    "UI": {
-        "name": "User Interaction",
-        "options": {
-            "N": {
-                "description": "",
-                "name": "None",
-                "value": 0,
-            },
-            "R": {
-                "description": "",
-                "name": "Required",
-                "value": 0,
-            }
-        }
-    },
-    "S": {
-        "name": "Scope", 
-        "options": {
-            "C": {
-                "description": "",
-                "name": "Changed",
-                "value": 0, 
-            }, 
-            "U": {
-                "description": "",
-                "name": "Unchanged",
-                "value": 0,
-            }
-        }
-    }, 
-    "C": {
-        "name": "Confidentiality",
-        "options": {
-            "H": {
-                "description": "",
-                "name": "High",
-                "value": 0,
-            },
-            "L": {
-                "description": "",
-                "name": "Low",
-                "value": 0,
-            },
-            "N": {
-                "description": "",
-                "name": "None",
-                "value": 0,
-            },
-        }
-    },
-    "I": {
-        "name": "Integrity",
-        "options": {
-            "H": {
-                "description": "",
-                "name": "High",
-                "value": 0,
-            },
-            "L": {
-                "description": "",
-                "name": "Low",
-                "value": 0,
-            },
-            "N": {
-                "description": "",
-                "name": "None",
-                "value": 0,
-            },
-        }
-    },
-    "A": {
-        "name": "Availability",
-        "options": {
-            "H": {
-                "description": "",
-                "name": "High",
-                "value": 0,
-            },
-            "L": {
-                "description": "",
-                "name": "Low",
-                "value": 0,
-            },
-            "N": {
-                "description": "",
-                "name": "None",
-                "value": 0,
-            },
-        }
-    }
-}
-    return dic
-
-class BaseView(tk.Toplevel): 
-    def __init__(self, parent, value, brother):
-        super().__init__(parent)
-
-        self.mainframe = ttk.Frame(self)
-        self._tv = {"AV": StringVar(), "AC": StringVar(), "PR": StringVar(), "UI": StringVar(), "S": StringVar(), "C": StringVar(), "I": StringVar(), "A":StringVar()}
-        base_dict = return_dict()
-        self.erroro = StringVar()
-        self.title("cvvslator Base")
-
-        self.value = value
-        # This frame is needed ot have access to the function of the previous frame, to enable it
-        self.brother = brother
-
-        self.view_label = ttk.Label(self.mainframe, text="Base Metrics: ")
-        self.error_label = ttk.Label(self.mainframe, textvariable=self.erroro)
-        
-        self.view_label.grid(pady=10)
-        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.create_labels(base_dict)
-        self.mainframe.grid(pady=10, padx=10)
-        self.error_label.grid(pady=10)
-        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
-        self.submit_button.grid()
-
-
-    def print_text(self):
-        
-        output_string = f'AV:{self._tv["AV"].get()}/AC:{self._tv["AC"].get()}/PR:{self._tv["PR"].get()}/UI:{self._tv["UI"].get()}/S:{self._tv["S"].get()}/C:{self._tv["C"].get()}/I:{self._tv["I"].get()}/A:{self._tv["A"].get()}'
-        
-        try:
-            self.brother.controller.set_metric(output_string)
-            self.value.set(self.brother.controller.get_metric(type="BASE"))
-            self.brother.base_score_var.set(self.brother.controller.get_base_score())
-            self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
-            self.brother.env_score_var.set(self.brother.controller.get_env_score())
-            self.brother.check_status()
-            self.brother.destroy_top_level()
-        except Exception:
-            self.erroro.set("YOU HAVE TO SELECT ALL VALUES")
-
-    def create_labels(self, dict_values): 
-        for i in dict_values:
-            metric_label = ttk.Label(self.mainframe, text=dict_values[i]["name"])
-            metric_label.grid()
-            MetricOptions(parent=self.mainframe, valueholder=self._tv[i], values=i, dict=return_dict())
-
-class TempView(tk.Toplevel): 
-    def __init__(self, parent, value, brother):
-        super().__init__(parent)
-        self.mainframe = ttk.Frame(self)
-        self.value_hold = {"E": StringVar(), "RL": StringVar(), "RC": StringVar()}
-        temp_dict = return_temp()
-        self.value = value
-        self.title("cvvslator Temporal")
-        self.brother = brother
-
-        self.view_label = ttk.Label(self.mainframe, text="Temporal Metrics: ")
-        
-        self.view_label.grid(pady=10)
-        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.create_labels(temp_dict)
-        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
-        self.submit_button.grid()
-        self.mainframe.grid(pady=10, padx=10)
-
-    def print_text(self):
-        for i in self.value_hold: 
-            self.brother.controller.set_metric(i, self.value_hold[i].get())
-        self.value.set(self.brother.controller.get_metric(type="TEMP"))
-        self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
-        self.brother.check_status()
-        self.brother.destroy_top_level()
-
-    def create_labels(self, dict_values): 
-        for i in dict_values:
-            metric_label = ttk.Label(self.mainframe, text=dict_values[i]["name"])
-            metric_label.grid()
-            MetricOptions(parent=self.mainframe, valueholder=self.value_hold[i], values=i, dict=return_temp(), val="X")
-
-
-class EnvView(tk.Toplevel): 
-    def __init__(self, parent, value, brother):
-        super().__init__(parent)
-        self.mainframe = ttk.Frame(self)
-        self.value_hold = {"CR": StringVar(), "IR": StringVar(), "AR": StringVar(), "MAV": StringVar(), "MAC": StringVar(), "MPR": StringVar(), "MUI": StringVar(), "MS": StringVar(), "MC": StringVar(), "MI": StringVar(), "MA":StringVar()}
-        env_dict = return_env()
-        self.value = value
-        self.title("cvvslator Environmental")
-        self.brother=brother
-
-        self.view_label = ttk.Label(self.mainframe, text="Environmental Score: ")
-        
-        self.view_label.grid(pady=10)
-        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.create_labels(env_dict)
-        self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
-        self.submit_button.grid()
-        self.mainframe.grid(pady=10, padx=10)
-
-    def print_text(self):
-        for i in self.value_hold: 
-            self.brother.controller.set_metric(i, self.value_hold[i].get())
-        self.value.set(self.brother.controller.get_metric(type="ENV"))
-        self.brother.env_score_var.set(self.brother.controller.get_env_score())
-        self.brother.check_status()
-        self.brother.destroy_top_level()
-
-    def create_labels(self, dict_values): 
-        for i in dict_values:
-            metric_label = ttk.Label(self.mainframe, text=dict_values[i]["name"])
-            metric_label.grid()
-            MetricOptions(parent=self.mainframe, valueholder=self.value_hold[i], values=i, dict=return_env(), val="X")
 
 
 class CreationView: 
@@ -713,7 +707,7 @@ class CreationView:
         self.controller.set_asset(self.asset_str.get())
 
         if self.controller.print_json() == True:
-        	self.error_str.set(f"{self.asset_str.get()}.json has been created!")
+        	self.error_str.set(f"{self.asset_str.get()}.json has been created!")                
         else:
         	self.error_str.set("JSON Template is corrupted!")
 
@@ -772,7 +766,7 @@ class GetCredentials:
 
         self.password_str = StringVar() 
         password_name = ttk.Label(self.frame, text="Password")
-        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+        password_entry = ttk.Entry(self.frame,show="*", textvariable=self.password_str)
 
         self.button = ttk.Button(self.frame, text="Submit", command=self.submit_form, state=ACTIVE)
 
@@ -805,8 +799,9 @@ class CreateUser:
         self.frame = ttk.Frame(self.root)
         self.controller = controller
 
-        self.msg = StringVar()
-        msg = ttk.Label(self.frame, text="CREATE YOUR ACCOUNT")
+        self.notification_var = StringVar()
+        title_label = ttk.Label(self.frame, text="CREATE YOUR ACCOUNT")
+        notification_label = ttk.Label(self.frame, textvariable=self.notification_var)
 
         self.user_str = StringVar()
         user_name = ttk.Label(self.frame, text="Username")
@@ -814,26 +809,28 @@ class CreateUser:
 
         self.password_str = StringVar() 
         password_name = ttk.Label(self.frame, text="Password")
-        password_entry = ttk.Entry(self.frame, textvariable=self.password_str)
+        password_entry = ttk.Entry(self.frame, show="*", textvariable=self.password_str)
 
         self.button = ttk.Button(self.frame, text="Submit", command=self.submit_form, state=ACTIVE)
 
-        msg.grid(column=0,row=0, pady=10)
-        user_name.grid(column=0, row=1)
-        user_entry.grid(column=0,row=2)
-        password_name.grid(column=0, row=3)
-        password_entry.grid(column=0, row=4)
-        self.button.grid(column=0, row=5, pady=10)
+        title_label.grid(column=0,row=0, pady=10)
+        notification_label.grid(column=0, row=1)
+        user_name.grid(column=0, row=2)
+        user_entry.grid(column=0,row=3)
+        password_name.grid(column=0, row=4)
+        password_entry.grid(column=0, row=5)
+        self.button.grid(column=0, row=6, pady=10)
 
         self.frame.grid(padx=25, pady=25) 
 
         self.root.mainloop()
 
     def submit_form(self): 
-        if self.user_str.get() == "" and self.password_str.get() == "": 
-            self.root.destroy()
-            GetCredentials(self.controller, "Unknown Combination!")
+        if self.user_str.get() == "" or self.password_str.get() == "" or len(self.password_str.get()) < 8: 
+            self.notification_var.set("Choose a strong combination")
         else:
+            self.controller.check_auth = True
             self.controller.set_user(self.user_str.get())
             self.controller.set_password(self.password_str.get())
             self.root.destroy()
+  

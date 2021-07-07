@@ -100,6 +100,7 @@ class Controller:
         self.username = ""
         self.password = ""
         self.msg = ""
+        self.check_auth = False
 
     def gui_loop(self): 
         root = Tk()
@@ -147,23 +148,27 @@ class Controller:
 
             CreateUser(self)
 
-            hash_object = hashlib.sha256(self.password.encode('ascii'))
-            hash_password = str(hash_object.hexdigest())
+            if self.check_auth:
 
-            credentials = {
-                'user': self.username,
-                'password': hash_password
+                hash_object = hashlib.sha256(self.password.encode('ascii'))
+                hash_password = str(hash_object.hexdigest())
 
-            }
+                credentials = {
+                    'user': self.username,
+                    'password': hash_password
 
-            with open('../templates/auth.json', 'w') as auth:
-                json.dump(credentials, auth)
+                }
+
+                with open('../templates/auth.json', 'w') as auth:
+                    json.dump(credentials, auth)
             
-            self.username = ""
-            self.password = ""
+                self.username = ""
+                self.password = ""
             
-            self.gui_loop()
-            return "set"
+                self.gui_loop()
+                return "set"
+            else: 
+                return False
     
     def set_user(self, username):
         self.username = username
@@ -189,7 +194,12 @@ class Controller:
         JSON_OUT['env_score'] = self._model.get_env_score()
         JSON_OUT['total_score'] = self._model.get_total_score()
 
-        create_name = '../output/' + self._model.get_asset_name() + '_output.json'
+        print(self._model.get_asset_name())
+
+        if self._model.get_asset_name() != "N/D":
+            create_name = '../output/' + self._model.get_asset_name() + '_output.json'
+        else:
+            create_name = "../output/unknown_output.json"
         
         with open(create_name, 'w') as out2:
             out2.write(json.dumps(JSON_OUT, indent=4))
@@ -208,7 +218,11 @@ class Controller:
             TXT_OUT = TXT_OUT.replace('$total_score$', str(self._model.get_total_score()))
 
 
-            create_name = '../output/' + self._model.get_asset_name() + '_output.txt'
+            print(self._model.get_asset_name())
+            if self._model.get_asset_name() != "N/D":
+                create_name = '../output/' + self._model.get_asset_name() + '_output.txt'
+            else: 
+                create_name = "../output/unknown_output.txt"
 
 
             with open(create_name , 'w') as output:
@@ -243,10 +257,16 @@ class Controller:
         return self._model.get_temp_score()
 
     def set_vul(self, value): 
-        self._model.set_vulnerability_name(value)
+        if value == "":
+            self._model.set_asset_name("N/D")
+        else:
+            self._model.set_vulnerability_name(value)
     
     def set_asset(self, value):
-        self._model.set_asset_name(value)
+        if value == "":
+            self._model.set_asset_name("N/D")
+        else:
+            self._model.set_asset_name(value)
     
     def get_user(self):
         return self.username
