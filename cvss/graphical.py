@@ -1,17 +1,19 @@
 
 
+from os import EX_CANTCREAT
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from abc import ABC, abstractclassmethod
 
 class BaseView(tk.Toplevel): 
+
     def __init__(self, parent, value, brother):
         super().__init__(parent)
 
         self.mainframe = ttk.Frame(self)
         self._tv = {"AV": StringVar(), "AC": StringVar(), "PR": StringVar(), "UI": StringVar(), "S": StringVar(), "C": StringVar(), "I": StringVar(), "A":StringVar()}
-        self.erroro = StringVar()
+        self.error_var = StringVar()
         self.title("cvvslator Base")
 
         self.value = value
@@ -19,7 +21,7 @@ class BaseView(tk.Toplevel):
         self.brother = brother
 
         self.view_label = ttk.Label(self.mainframe, text="Base Metrics: ")
-        self.error_label = ttk.Label(self.mainframe, textvariable=self.erroro)
+        self.error_label = ttk.Label(self.mainframe, textvariable=self.error_var)
         
         self.view_label.grid(pady=10)
         # TO-DO This button has to be put blow create_labels once ScrollView is implemented
@@ -41,9 +43,9 @@ class BaseView(tk.Toplevel):
             self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
             self.brother.env_score_var.set(self.brother.controller.get_env_score())
             self.brother.check_status()
-            self.brother.destroy_top_level()
+            self.brother.destroy_top_level(self)
         except Exception:
-            self.erroro.set("YOU HAVE TO SELECT ALL VALUES")
+            self.error_var.set("YOU HAVE TO SELECT ALL VALUES")
 
     def _get_base_metrics(self):
         return {
@@ -214,12 +216,11 @@ class TempView(tk.Toplevel):
         self.title("cvvslator Temporal")
         self.brother = brother
 
-        self.view_label = ttk.Label(self.mainframe, text="Temporal Metrics: ")
-        
-        self.view_label.grid(pady=10)
-        # TO-DO This button has to be put blow create_labels once ScrollView is implemented
-        self.create_labels(self._get_temp_metrics())
+        self.view_label = ttk.Label(self.mainframe, text="Temporal Metrics: ") 
         self.submit_button = ttk.Button(self.mainframe, text="Press", command=self.print_text)
+
+        self.view_label.grid(pady=10)
+        self.create_labels(self._get_temp_metrics())
         self.submit_button.grid()
         self.mainframe.grid(pady=10, padx=10)
 
@@ -229,7 +230,7 @@ class TempView(tk.Toplevel):
         self.value.set(self.brother.controller.get_metric(type="TEMP"))
         self.brother.temp_score_var.set(self.brother.controller.get_temp_score())
         self.brother.check_status()
-        self.brother.destroy_top_level()
+        self.brother.destroy_top_level(self)
 
     def create_labels(self, dict_values): 
         for i in dict_values:
@@ -352,7 +353,7 @@ class EnvView(tk.Toplevel):
         self.value.set(self.brother.controller.get_metric(type="ENV"))
         self.brother.env_score_var.set(self.brother.controller.get_env_score())
         self.brother.check_status()
-        self.brother.destroy_top_level()
+        self.brother.destroy_top_level(self)
 
     def create_labels(self, dict_values): 
         for i in dict_values:
@@ -668,8 +669,8 @@ class CreationView:
         self.env_score_var = DoubleVar()
         self.env_score_var.set(0.0)
         env_score_value = ttk.Label(self.frame, textvariable=self.env_score_var)
-        self.error_str = StringVar()
-        self.error_label = ttk.Label(self.frame, textvariable=self.error_str)
+        self.status_var = StringVar()
+        self.status_label = ttk.Label(self.frame, textvariable=self.status_var)
         self.env_score_button_var =  StringVar() 
         self.env_score_button_var.set("Not set yet!")
         self.env_score_button = ttk.Button(self.frame, textvariable=self.env_score_button_var, command=self.env_top_level, width=50, state=DISABLED)
@@ -690,7 +691,7 @@ class CreationView:
         self.env_score_button.grid(column=0, row=9, columnspan=2)
 
 
-        self.error_label.grid(column=0, columnspan=2, row=10 ,pady=10)
+        self.status_label.grid(column=0, columnspan=2, row=10 ,pady=10)
         self.txtbutton.grid(column=0, row=11,pady=10)
         self.jsonbutton.grid(column=1, row=11, pady=10)
 
@@ -699,7 +700,7 @@ class CreationView:
     def submit_txt(self): 
         self.controller.set_vul(self.vul_str.get())
         self.controller.set_asset(self.asset_str.get())
-        self.error_str.set(f"{self.asset_str.get()}.txt has been created!")
+        self.status_var.set(f"{self.asset_str.get()}.txt has been created!")
         self.controller.print_txt()
 
     def submit_json(self): 
@@ -707,22 +708,21 @@ class CreationView:
         self.controller.set_asset(self.asset_str.get())
 
         if self.controller.print_json() == True:
-        	self.error_str.set(f"{self.asset_str.get()}.json has been created!")                
+        	self.status_var.set(f"{self.asset_str.get()}.json has been created!")                
         else:
-        	self.error_str.set("JSON Template is corrupted!")
+        	self.status_var.set("JSON Template is corrupted!")
 
-    def destroy_top_level(self):
-        
-        self.t1.destroy()
+    def destroy_top_level(self, view):
+        view.destroy()
 
     def base_top_level(self): 
-        self.t1 = BaseView(self.frame, self.base_score_button_var, self)
+        BaseView(self.frame, self.base_score_button_var, self)
 
     def temp_top_level(self): 
-        self.t1 = TempView(self.frame, self.temp_score_button_var, self)
+        TempView(self.frame, self.temp_score_button_var, self)
 
     def env_top_level(self): 
-        self.t1 = EnvView(self.frame, self.env_score_button_var, self)
+        EnvView(self.frame, self.env_score_button_var, self)
 
     def check_status(self): 
         if self.base_score_button_var.get() != "Not set yet!": 
