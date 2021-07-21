@@ -194,8 +194,6 @@ class Controller:
         JSON_OUT['env_score'] = self._model.get_env_score()
         JSON_OUT['total_score'] = self._model.get_total_score()
 
-        print(self._model.get_asset_name())
-
         if self._model.get_asset_name() != "N/D":
             create_name = '../output/' + self._model.get_asset_name() + '_output.json'
         else:
@@ -218,7 +216,7 @@ class Controller:
             TXT_OUT = TXT_OUT.replace('$total_score$', str(self._model.get_total_score()))
 
 
-            print(self._model.get_asset_name())
+
             if self._model.get_asset_name() != "N/D":
                 create_name = '../output/' + self._model.get_asset_name() + '_output.txt'
             else: 
